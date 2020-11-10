@@ -6,7 +6,6 @@ import translate from '@k3rn31p4nic/google-translate-api'
 
 async function run(): Promise<void> {
   try {
-    core.info(JSON.stringify(github.context))
     if (
       github.context.eventName !== 'issue_comment' ||
       github.context.payload.action ||
@@ -19,7 +18,6 @@ async function run(): Promise<void> {
     }
     const issueCommentPayload = github.context
       .payload as webhook.EventPayloads.WebhookPayloadIssueComment
-    core.info(JSON.stringify(issueCommentPayload))
     const issue_id = issueCommentPayload.issue.id
     const issue_origin_comment_body = issueCommentPayload.comment.body
     core.info(issue_origin_comment_body)

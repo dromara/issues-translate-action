@@ -2,10 +2,9 @@ name: 'issue translator'
 description: 'The action for translating non-english issues content to english.'
 author: 'tomsun28'
 inputs:
-  milliseconds: # change this
+  bot_github_token: 
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'bot_github_token'
 runs:
   using: 'node12'
   main: 'dist/index.js'

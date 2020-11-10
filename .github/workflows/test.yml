@@ -21,4 +21,3 @@ jobs:
       - uses: ./
         with:
           bot_github_token: ${{ secrets.BOT_GITHUB_TOKEN }}
-          milliseconds: 1000
