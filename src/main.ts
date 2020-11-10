@@ -5,20 +5,26 @@ import * as webhook from '@octokit/webhooks'
 
 async function run(): Promise<void> {
   try {
-
-    console.log(github.context)
-    if (github.context.payload.action && !['created', 'opened'].includes(github.context.payload.action)) {
-      console.log(`The status of the action is no applicable ${github.context.payload.action}, return`)
+    core.info(JSON.stringify(github.context))
+    if (
+      github.context.payload.action &&
+      !['created', 'opened'].includes(github.context.payload.action)
+    ) {
+      core.info(
+        `The status of the action is no applicable ${github.context.payload.action}, return`
+      )
       return
     }
-    if (github.context.eventName == "issue") {
-      const issuePayload = github.context.payload as webhook.EventPayloads.WebhookPayloadIssues;
-      console.log(issuePayload)
-    } else if (github.context.eventName == "issue_comment") {
-      const issueCommentPayload = github.context.payload as webhook.EventPayloads.WebhookPayloadIssueComment;
-      console.log(issueCommentPayload)
+    if (github.context.eventName === 'issue') {
+      const issuePayload = github.context
+        .payload as webhook.EventPayloads.WebhookPayloadIssues
+      core.info(JSON.stringify(issuePayload))
+    } else if (github.context.eventName === 'issue_comment') {
+      const issueCommentPayload = github.context
+        .payload as webhook.EventPayloads.WebhookPayloadIssueComment
+      core.info(JSON.stringify(issueCommentPayload))
     } else {
-      console.log(github.context.payload)
+      core.info(JSON.stringify(github.context.payload))
     }
 
     const ms: string = core.getInput('milliseconds')
