@@ -1,7 +1,7 @@
 name: 'build-test'
 on: # rebuild any PRs and main branch changes
-  pull_request:
-  push:
+  issues:
+  issue_comment:
     branches:
       - main
       - 'releases/*'
