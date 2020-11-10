@@ -1,6 +1,5 @@
 name: 'build-test'
 on: # rebuild any PRs and main branch changes
-  issues:
   issue_comment:
     branches:
       - main
@@ -21,4 +20,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
+          bot_github_token: ${{ secrets.BOT_GITHUB_TOKEN }}
           milliseconds: 1000

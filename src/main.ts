@@ -1,43 +1,77 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
 import * as github from '@actions/github'
 import * as webhook from '@octokit/webhooks'
+import LanguageDetect from 'languagedetect'
+import translate from '@k3rn31p4nic/google-translate-api'
 
 async function run(): Promise<void> {
   try {
     core.info(JSON.stringify(github.context))
     if (
-      github.context.payload.action &&
-      !['created', 'opened'].includes(github.context.payload.action)
+      github.context.eventName !== 'issue_comment' ||
+      github.context.payload.action ||
+      github.context.payload.action !== 'created'
     ) {
-      core.info(
-        `The status of the action is no applicable ${github.context.payload.action}, return`
+      core.setFailed(
+        `The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`
       )
       return
     }
-    if (github.context.eventName === 'issue') {
-      const issuePayload = github.context
-        .payload as webhook.EventPayloads.WebhookPayloadIssues
-      core.info(JSON.stringify(issuePayload))
-    } else if (github.context.eventName === 'issue_comment') {
-      const issueCommentPayload = github.context
-        .payload as webhook.EventPayloads.WebhookPayloadIssueComment
-      core.info(JSON.stringify(issueCommentPayload))
-    } else {
-      core.info(JSON.stringify(github.context.payload))
+    const issueCommentPayload = github.context
+      .payload as webhook.EventPayloads.WebhookPayloadIssueComment
+    core.info(JSON.stringify(issueCommentPayload))
+    const issue_id = issueCommentPayload.issue.id
+    const issue_origin_comment_body = issueCommentPayload.comment.body
+    core.info(issue_origin_comment_body)
+    let issue_translate_comment_body = null
+
+    // detect comment body is english
+    if (detectIsEnglish(issue_origin_comment_body)) {
+      core.info('the issue comment body is english already.')
+      return
     }
 
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
+    issue_translate_comment_body = await translateCommentBody(
+      issue_origin_comment_body
+    )
+    core.info(issue_translate_comment_body)
+    await createComment(issue_id, issue_translate_comment_body)
     core.setOutput('time', new Date().toTimeString())
   } catch (error) {
     core.setFailed(error.message)
   }
+}
+
+function detectIsEnglish(body: string): boolean | true {
+  const lngDetector = new LanguageDetect()
+  const detectResult = lngDetector.detect(body, 1)
+  return detectResult.length === 1 && detectResult[0][0] === 'english'
+}
+
+async function translateCommentBody(body: string): Promise<string> {
+  let result = ''
+  await translate(body, {to: 'en'})
+    .then(res => {
+      core.info(res.text)
+      result = res.text
+    })
+    .catch(err => {
+      core.error(err)
+      core.setFailed(err.message)
+    })
+  return result
+}
+
+async function createComment(issueId: number, body: string): Promise<void> {
+  const {owner, repo} = github.context.repo
+  const myToken = core.getInput('bot_github_token')
+  const octokit = github.getOctokit(myToken)
+  await octokit.issues.createComment({
+    owner,
+    repo,
+    ['issue_number']: issueId,
+    body
+  })
 }
 
 run()
