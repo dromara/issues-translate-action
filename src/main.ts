@@ -8,7 +8,6 @@ async function run(): Promise<void> {
   try {
     if (
       github.context.eventName !== 'issue_comment' ||
-      github.context.payload.action ||
       github.context.payload.action !== 'created'
     ) {
       core.setFailed(

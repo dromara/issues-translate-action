@@ -5020,7 +5020,6 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             if (github.context.eventName !== 'issue_comment' ||
-                github.context.payload.action ||
                 github.context.payload.action !== 'created') {
                 core.setFailed(`The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`);
                 return;
