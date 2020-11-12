@@ -44,7 +44,7 @@ async function run(): Promise<void> {
 
     // translate issue comment body to english
     const issue_translate_comment_body = await translateCommentBody(
-      issue_origin_comment_body
+      issue_origin_comment_body, issue_user
     )
 
     if (issue_translate_comment_body === null 
@@ -76,12 +76,13 @@ function detectIsEnglish(body: string): boolean | true {
   return detectResult.length === 1 && detectResult[0][0] === 'english'
 }
 
-async function translateCommentBody(body: string): Promise<string> {
+async function translateCommentBody(body: string, issue_user: string): Promise<string> {
   let result = ''
   await translate(body, {to: 'en'})
     .then(res => {
       result = 
       `
+> @${issue_user}  
 > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time👯.     
 ----  
 

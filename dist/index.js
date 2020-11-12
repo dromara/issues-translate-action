@@ -5048,7 +5048,7 @@ function run() {
                 return;
             }
             // translate issue comment body to english
-            const issue_translate_comment_body = yield translateCommentBody(issue_origin_comment_body);
+            const issue_translate_comment_body = yield translateCommentBody(issue_origin_comment_body, issue_user);
             if (issue_translate_comment_body === null
                 || issue_translate_comment_body === ''
                 || issue_translate_comment_body === issue_origin_comment_body) {
@@ -5077,13 +5077,14 @@ function detectIsEnglish(body) {
     core.info(`Detect comment body language result is: ${detectResult[0][0]}, similar sorce: ${detectResult[0][1]}`);
     return detectResult.length === 1 && detectResult[0][0] === 'english';
 }
-function translateCommentBody(body) {
+function translateCommentBody(body, issue_user) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = '';
         yield google_translate_api_1.default(body, { to: 'en' })
             .then(res => {
             result =
                 `
+> @${issue_user}  
 > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time👯.     
 ----  
 
