@@ -5,6 +5,8 @@ inputs:
   BOT_GITHUB_TOKEN: 
     required: true
     description: 'The issue comment bot GITHUB_TOKEN.'
+  BOT_LOGIN_NAME:
+    description: 'The issue comment bot github login name.'
 runs:
   using: 'node12'
   main: 'dist/index.js'

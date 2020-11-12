@@ -17,22 +17,49 @@ async function run(): Promise<void> {
     }
     const issueCommentPayload = github.context
       .payload as webhook.EventPayloads.WebhookPayloadIssueComment
-    const issue_id = issueCommentPayload.issue.id
+    const issue_number = issueCommentPayload.issue.number
     const issue_origin_comment_body = issueCommentPayload.comment.body
-    core.info(issue_origin_comment_body)
+    core.info(issue_origin_comment_body + "---" + issue_number)
     let issue_translate_comment_body = null
 
     // detect comment body is english
     if (detectIsEnglish(issue_origin_comment_body)) {
-      core.info('the issue comment body is english already.')
+      core.info('the issue comment body is english already, ignore return.')
       return
     }
 
+    // ignore when bot comment issue himself
+    const myToken = core.getInput('BOT_GITHUB_TOKEN')
+    let octokit = null;
+    const issue_user = issueCommentPayload.comment.user.login
+    let bot_login_name = core.getInput('BOT_LOGIN_NAME')
+    if (bot_login_name === null) {
+      octokit = github.getOctokit(myToken)
+      const botInfo = await octokit.request('GET /user')
+      bot_login_name = botInfo.data.login
+    }
+    if (bot_login_name === issue_user ) {
+      core.info("The issue comment user is bot self, ignore return.")
+      return
+    }
+    
+
+    // translate issue comment body to english
     issue_translate_comment_body = await translateCommentBody(
       issue_origin_comment_body
     )
+
+    if (issue_translate_comment_body === null || issue_translate_comment_body === '') {
+      core.warning("The issue_translate_comment_body is null, ignore return.")
+      return
+    }
+
+    // create comment by bot
     core.info(issue_translate_comment_body)
-    await createComment(issue_id, issue_translate_comment_body)
+    if (octokit === null) {
+      octokit = github.getOctokit(myToken)
+    }
+    await createComment(issue_number, issue_translate_comment_body, octokit)
     core.setOutput('time', new Date().toTimeString())
   } catch (error) {
     core.setFailed(error.message)
@@ -62,18 +89,21 @@ async function translateCommentBody(body: string): Promise<string> {
   return result
 }
 
-async function createComment(issueId: number, body: string): Promise<void> {
+async function createComment(issueId: number, body: string, octokit: any): Promise<void> {
   const {owner, repo} = github.context.repo
   core.info(owner + repo)
-  const myToken = core.getInput('BOT_GITHUB_TOKEN')
-  core.info(myToken)
-  const octokit = github.getOctokit(myToken)
-  await octokit.issues.createComment({
-    owner,
-    repo,
-    ['issue_number']: issueId,
-    body
-  })
+  try {
+    
+    core.info("get octokit success!")
+    await octokit.issues.createComment({
+      owner,
+      repo,
+      issue_number: issueId,
+      body
+    }) 
+  } catch (error) {
+    core.error(error.message)
+  }
 }
 
 run()
