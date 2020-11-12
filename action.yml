@@ -4,7 +4,7 @@ author: 'tomsun28'
 inputs:
   BOT_GITHUB_TOKEN: 
     required: true
-    description: 'The issue comment bot's GITHUB_TOKEN'
+    description: 'The issue comment bot GITHUB_TOKEN.'
 runs:
   using: 'node12'
   main: 'dist/index.js'
