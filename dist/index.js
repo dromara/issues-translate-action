@@ -5039,7 +5039,7 @@ function run() {
             const issue_user = issueCommentPayload.comment.user.login;
             let bot_login_name = core.getInput('BOT_LOGIN_NAME');
             core.info(`bot_login_name1: ${bot_login_name}`);
-            if (bot_login_name === null) {
+            if (bot_login_name === null || bot_login_name === undefined || bot_login_name === '') {
                 octokit = github.getOctokit(myToken);
                 const botInfo = yield octokit.request('GET /user');
                 core.info(JSON.stringify(botInfo));

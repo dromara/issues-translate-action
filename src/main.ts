@@ -32,14 +32,14 @@ async function run(): Promise<void> {
     const issue_user = issueCommentPayload.comment.user.login
     let bot_login_name = core.getInput('BOT_LOGIN_NAME')
     core.info(`bot_login_name1: ${bot_login_name}`)
-    if (bot_login_name === null) {
+    if (bot_login_name === null || bot_login_name === undefined || bot_login_name === '') {
       octokit = github.getOctokit(myToken)
       const botInfo = await octokit.request('GET /user')
       core.info(JSON.stringify(botInfo))
       bot_login_name = botInfo.data.login
       core.info(`bot_login_name2: ${bot_login_name}`)
     }
-    if (bot_login_name === issue_user ) {
+    if (bot_login_name === issue_user) {
       core.info("The issue comment user is bot self, ignore return.")
       return
     }
