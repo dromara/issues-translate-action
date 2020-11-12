@@ -5030,7 +5030,7 @@ function run() {
             const issue_origin_comment_body = issueCommentPayload.comment.body;
             // detect comment body is english
             if (detectIsEnglish(issue_origin_comment_body)) {
-                core.info('the issue comment body is english already, ignore return.');
+                core.info('Detect the issue comment body is english already, ignore return.');
                 return;
             }
             // ignore when bot comment issue himself
@@ -5038,7 +5038,6 @@ function run() {
             let octokit = null;
             const issue_user = issueCommentPayload.comment.user.login;
             let bot_login_name = core.getInput('BOT_LOGIN_NAME');
-            core.info(`bot_login_name1: ${bot_login_name}`);
             if (bot_login_name === null || bot_login_name === undefined || bot_login_name === '') {
                 octokit = github.getOctokit(myToken);
                 const botInfo = yield octokit.request('GET /user');
@@ -5047,7 +5046,7 @@ function run() {
                 core.info(`bot_login_name2: ${bot_login_name}`);
             }
             if (bot_login_name === issue_user) {
-                core.info("The issue comment user is bot self, ignore return.");
+                core.info(`The issue comment user is bot ${bot_login_name} himself, ignore return.`);
                 return;
             }
             // translate issue comment body to english
@@ -5074,7 +5073,10 @@ function run() {
 function detectIsEnglish(body) {
     const lngDetector = new languagedetect_1.default();
     const detectResult = lngDetector.detect(body, 1);
-    core.info(`detect comment body result is: ${detectResult[0][0]}, sorce: ${detectResult[0][1]}`);
+    if (detectResult === undefined || detectResult === null || detectResult.length !== 1) {
+        core.setFailed(`Can not detect the comment body: ${body}`);
+    }
+    core.info(`Detect comment body language result is: ${detectResult[0][0]}, similar sorce: ${detectResult[0][1]}`);
     return detectResult.length === 1 && detectResult[0][0] === 'english';
 }
 function translateCommentBody(body) {
@@ -5082,7 +5084,13 @@ function translateCommentBody(body) {
         let result = '';
         yield google_translate_api_1.default(body, { to: 'en' })
             .then(res => {
-            result = res.text;
+            result = `
+      > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time.   
+
+      ----    
+
+      ${res.text}  
+      `;
         })
             .catch(err => {
             core.error(err);
