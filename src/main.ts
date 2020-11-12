@@ -72,7 +72,8 @@ function detectIsEnglish(body: string): boolean | true {
   const lngDetector = new LanguageDetect()
   const detectResult = lngDetector.detect(body, 1)
   if (detectResult === undefined || detectResult === null || detectResult.length !== 1) {
-    core.setFailed(`Can not detect the comment body: ${body}`)
+    core.warning(`Can not detect the comment body: ${body}`)
+    return false
   }
   core.info(`Detect comment body language result is: ${detectResult[0][0]}, similar sorce: ${detectResult[0][1]}`)
   return detectResult.length === 1 && detectResult[0][0] === 'english'
