@@ -5048,6 +5048,9 @@ function run() {
 function detectIsEnglish(body) {
     const lngDetector = new languagedetect_1.default();
     const detectResult = lngDetector.detect(body, 1);
+    for (let i = 0; i < detectResult.length; i++) {
+        core.info(detectResult[i][0] + detectResult[i][1]);
+    }
     return detectResult.length === 1 && detectResult[0][0] === 'english';
 }
 function translateCommentBody(body) {
@@ -5068,7 +5071,9 @@ function translateCommentBody(body) {
 function createComment(issueId, body) {
     return __awaiter(this, void 0, void 0, function* () {
         const { owner, repo } = github.context.repo;
-        const myToken = core.getInput('bot_github_token');
+        core.info(owner + repo);
+        const myToken = core.getInput('BOT_GITHUB_TOKEN');
+        core.info(myToken);
         const octokit = github.getOctokit(myToken);
         yield octokit.issues.createComment({
             owner,

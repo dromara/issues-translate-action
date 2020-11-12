@@ -42,6 +42,9 @@ async function run(): Promise<void> {
 function detectIsEnglish(body: string): boolean | true {
   const lngDetector = new LanguageDetect()
   const detectResult = lngDetector.detect(body, 1)
+  for (let i = 0; i < detectResult.length; i++) {
+    core.info(detectResult[i][0] + detectResult[i][1])
+  }
   return detectResult.length === 1 && detectResult[0][0] === 'english'
 }
 
@@ -61,7 +64,9 @@ async function translateCommentBody(body: string): Promise<string> {
 
 async function createComment(issueId: number, body: string): Promise<void> {
   const {owner, repo} = github.context.repo
-  const myToken = core.getInput('bot_github_token')
+  core.info(owner + repo)
+  const myToken = core.getInput('BOT_GITHUB_TOKEN')
+  core.info(myToken)
   const octokit = github.getOctokit(myToken)
   await octokit.issues.createComment({
     owner,
