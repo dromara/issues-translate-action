@@ -34,9 +34,7 @@ async function run(): Promise<void> {
     if (bot_login_name === null || bot_login_name === undefined || bot_login_name === '') {
       octokit = github.getOctokit(myToken)
       const botInfo = await octokit.request('GET /user')
-      core.info(JSON.stringify(botInfo))
       bot_login_name = botInfo.data.login
-      core.info(`bot_login_name2: ${bot_login_name}`)
     }
     if (bot_login_name === issue_user) {
       core.info(`The issue comment user is bot ${bot_login_name} himself, ignore return.`)
