@@ -5041,9 +5041,7 @@ function run() {
             if (bot_login_name === null || bot_login_name === undefined || bot_login_name === '') {
                 octokit = github.getOctokit(myToken);
                 const botInfo = yield octokit.request('GET /user');
-                core.info(JSON.stringify(botInfo));
                 bot_login_name = botInfo.data.login;
-                core.info(`bot_login_name2: ${bot_login_name}`);
             }
             if (bot_login_name === issue_user) {
                 core.info(`The issue comment user is bot ${bot_login_name} himself, ignore return.`);
@@ -5085,11 +5083,10 @@ function translateCommentBody(body) {
         let result = '';
         yield google_translate_api_1.default(body, { to: 'en' })
             .then(res => {
-            result = `
-      > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time.   
-
+            result =
+                `
+      > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time^^.   
       ----    
-
       ${res.text}  
       `;
         })
@@ -5111,7 +5108,7 @@ function createComment(issueId, body, octokit) {
             issue_number: issueId,
             body
         });
-        core.info(`complete to push translate issue comment: ${body} in ${issue_url}.`);
+        core.info(`complete to push translate issue comment: ${body} in ${issue_url} `);
     });
 }
 run();

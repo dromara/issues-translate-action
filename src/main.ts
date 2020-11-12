@@ -81,11 +81,10 @@ async function translateCommentBody(body: string): Promise<string> {
   let result = ''
   await translate(body, {to: 'en'})
     .then(res => {
-      result = `
-      > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time.   
-
+      result = 
+      `
+      > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time^^.   
       ----    
-
       ${res.text}  
       `
     })
@@ -105,7 +104,7 @@ async function createComment(issueId: number, body: string, octokit: any): Promi
     issue_number: issueId,
     body
   }) 
-  core.info(`complete to push translate issue comment: ${body} in ${issue_url}.`)
+  core.info(`complete to push translate issue comment: ${body} in ${issue_url} `)
 }
 
 run()
