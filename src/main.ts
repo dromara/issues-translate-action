@@ -55,7 +55,6 @@ async function run(): Promise<void> {
     }
 
     // create comment by bot
-    core.info(issue_translate_comment_body)
     if (octokit === null) {
       octokit = github.getOctokit(myToken)
     }
@@ -83,9 +82,10 @@ async function translateCommentBody(body: string): Promise<string> {
     .then(res => {
       result = 
       `
-      > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time^^.   
-      ----    
-      ${res.text}  
+> Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time👯.     
+----  
+
+${res.text}  
       `
     })
     .catch(err => {
