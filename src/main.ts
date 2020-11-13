@@ -1,7 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as webhook from '@octokit/webhooks'
-import LanguageDetect from 'languagedetect'
 import translate from '@k3rn31p4nic/google-translate-api'
 
 let franc = require('franc-min')
@@ -74,8 +73,6 @@ async function run(): Promise<void> {
 }
 
 function detectIsEnglish(body: string): boolean | true {
-  // const lngDetector = new LanguageDetect()
-  // const detectResult = lngDetector.detect(body, 1)
   const detectResult = franc(body)
   if (detectResult === 'und' 
   || detectResult === undefined 

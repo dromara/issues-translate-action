@@ -4508,8 +4508,6 @@ function run() {
     });
 }
 function detectIsEnglish(body) {
-    // const lngDetector = new LanguageDetect()
-    // const detectResult = lngDetector.detect(body, 1)
     const detectResult = franc(body);
     if (detectResult === 'und'
         || detectResult === undefined
