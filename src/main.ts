@@ -4,6 +4,8 @@ import * as webhook from '@octokit/webhooks'
 import LanguageDetect from 'languagedetect'
 import translate from '@k3rn31p4nic/google-translate-api'
 
+let franc = require('franc-min')
+
 async function run(): Promise<void> {
   try {
     if (
@@ -72,14 +74,17 @@ async function run(): Promise<void> {
 }
 
 function detectIsEnglish(body: string): boolean | true {
-  const lngDetector = new LanguageDetect()
-  const detectResult = lngDetector.detect(body, 1)
-  if (detectResult === undefined || detectResult === null || detectResult.length !== 1) {
-    core.warning(`Can not detect the comment body: ${body}`)
+  // const lngDetector = new LanguageDetect()
+  // const detectResult = lngDetector.detect(body, 1)
+  const detectResult = franc(body)
+  if (detectResult === 'und' 
+  || detectResult === undefined 
+  || detectResult === null) {
+    core.warning(`Can not detect the undetermined comment body: ${body}`)
     return false
   }
-  core.info(`Detect comment body language result is: ${detectResult[0][0]}, similar sorce: ${detectResult[0][1]}`)
-  return detectResult.length === 1 && detectResult[0][0] === 'english'
+  core.info(`Detect comment body language result is: ${detectResult}`)
+  return detectResult === 'eng'
 }
 
 async function translateCommentBody(body: string, issue_user: string): Promise<string> {
