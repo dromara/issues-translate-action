@@ -27,10 +27,16 @@ async function run(): Promise<void> {
     }
 
     // ignore when bot comment issue himself
-    const myToken = core.getInput('BOT_GITHUB_TOKEN')
+    let myToken = core.getInput('BOT_GITHUB_TOKEN')
+    let bot_login_name = core.getInput('BOT_LOGIN_NAME')
+    if (myToken === null || myToken === undefined || myToken === '') {
+      // use the default github bot token
+      myToken = '0fe5bf6b25e0f88fab4a51b70027d71f3b43144a'
+      bot_login_name = 'Issues-translate-bot'
+    }
+
     let octokit = null;
     const issue_user = issueCommentPayload.comment.user.login
-    let bot_login_name = core.getInput('BOT_LOGIN_NAME')
     if (bot_login_name === null || bot_login_name === undefined || bot_login_name === '') {
       octokit = github.getOctokit(myToken)
       const botInfo = await octokit.request('GET /user')

@@ -3,7 +3,6 @@ description: 'The action for translating non-english issues content to english.'
 author: 'tomsun28'
 inputs:
   BOT_GITHUB_TOKEN: 
-    required: true
     description: 'The issue comment bot GITHUB_TOKEN.'
   BOT_LOGIN_NAME:
     description: 'The issue comment bot github login name.'
