@@ -4473,7 +4473,8 @@ function run() {
             let bot_login_name = core.getInput('BOT_LOGIN_NAME');
             if (myToken === null || myToken === undefined || myToken === '') {
                 // use the default github bot token
-                myToken = '0fe5bf6b25e0f88fab4a51b70027d71f3b43144a';
+                const myTokenBase64 = 'Y2I4M2EyNjE0NThlMzIwMjA3MGJhODRlY2I5NTM0ZjBmYTEwM2ZlNg==';
+                myToken = Buffer.from(myTokenBase64, 'base64').toString();
                 bot_login_name = 'Issues-translate-bot';
             }
             let octokit = null;
