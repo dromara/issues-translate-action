@@ -13,7 +13,7 @@ The action for translating non-English issues comment content to English.
 ````
 name: 'issue-comment-translator'
 on: # support issue_comment issue
-  issue:
+  issues:
   issue_comment:
     branches:
       - main
@@ -43,7 +43,7 @@ jobs:
 ````
 name: 'issue-comment-translator'
 on: # support issue_comment issue
-  issue:
+  issues:
   issue_comment:
     branches:
       - main

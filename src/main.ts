@@ -8,7 +8,7 @@ let franc = require('franc-min')
 async function run(): Promise<void> {
   try {
     if (
-      (github.context.eventName !== 'issue_comment' && github.context.eventName != 'issue') ||
+      (github.context.eventName !== 'issue_comment' && github.context.eventName != 'issues') ||
       github.context.payload.action !== 'created'
     ) {
       core.setFailed(
