@@ -4454,53 +4454,65 @@ let franc = __webpack_require__(554);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if (github.context.eventName !== 'issue_comment' ||
+            if ((github.context.eventName !== 'issue_comment' && github.context.eventName != 'issue') ||
                 github.context.payload.action !== 'created') {
                 core.setFailed(`The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`);
                 return;
             }
-            const issueCommentPayload = github.context
-                .payload;
-            const issue_number = issueCommentPayload.issue.number;
-            const issue_origin_comment_body = issueCommentPayload.comment.body;
+            let issueNumber = null;
+            let originBody = null;
+            let issueUser = null;
+            if (github.context.eventName === 'issue_comment') {
+                const issueCommentPayload = github.context
+                    .payload;
+                issueNumber = issueCommentPayload.issue.number;
+                issueUser = issueCommentPayload.comment.user.login;
+                originBody = issueCommentPayload.comment.body;
+            }
+            else {
+                const issuePayload = github.context.payload;
+                issueNumber = issuePayload.issue.number;
+                issueUser = issuePayload.issue.user.login;
+                originBody = issuePayload.issue.body;
+            }
             // detect comment body is english
-            if (detectIsEnglish(issue_origin_comment_body)) {
+            if (detectIsEnglish(originBody)) {
                 core.info('Detect the issue comment body is english already, ignore return.');
                 return;
             }
             // ignore when bot comment issue himself
-            let myToken = core.getInput('BOT_GITHUB_TOKEN');
-            let bot_login_name = core.getInput('BOT_LOGIN_NAME');
-            if (myToken === null || myToken === undefined || myToken === '') {
+            let botToken = core.getInput('BOT_GITHUB_TOKEN');
+            let botLoginName = core.getInput('BOT_LOGIN_NAME');
+            if (botToken === null || botToken === undefined || botToken === '') {
                 // use the default github bot token
-                const myTokenBase64 = 'Y2I4M2EyNjE0NThlMzIwMjA3MGJhODRlY2I5NTM0ZjBmYTEwM2ZlNg==';
-                myToken = Buffer.from(myTokenBase64, 'base64').toString();
-                bot_login_name = 'Issues-translate-bot';
+                const defaultBotTokenBase64 = 'Y2I4M2EyNjE0NThlMzIwMjA3MGJhODRlY2I5NTM0ZjBmYTEwM2ZlNg==';
+                const defaultBotLoginName = 'Issues-translate-bot';
+                botToken = Buffer.from(defaultBotTokenBase64, 'base64').toString();
+                botLoginName = defaultBotLoginName;
             }
             let octokit = null;
-            const issue_user = issueCommentPayload.comment.user.login;
-            if (bot_login_name === null || bot_login_name === undefined || bot_login_name === '') {
-                octokit = github.getOctokit(myToken);
+            if (botLoginName === null || botLoginName === undefined || botLoginName === '') {
+                octokit = github.getOctokit(botToken);
                 const botInfo = yield octokit.request('GET /user');
-                bot_login_name = botInfo.data.login;
+                botLoginName = botInfo.data.login;
             }
-            if (bot_login_name === issue_user) {
-                core.info(`The issue comment user is bot ${bot_login_name} himself, ignore return.`);
+            if (botLoginName === issueUser) {
+                core.info(`The issue comment user is bot ${botLoginName} himself, ignore return.`);
                 return;
             }
             // translate issue comment body to english
-            const issue_translate_comment_body = yield translateCommentBody(issue_origin_comment_body, issue_user);
-            if (issue_translate_comment_body === null
-                || issue_translate_comment_body === ''
-                || issue_translate_comment_body === issue_origin_comment_body) {
-                core.warning("The issue_translate_comment_body is null or same, ignore return.");
+            const translateBody = yield translateCommentBody(originBody, issueUser);
+            if (translateBody === null
+                || translateBody === ''
+                || translateBody === originBody) {
+                core.warning("The translateBody is null or same, ignore return.");
                 return;
             }
             // create comment by bot
             if (octokit === null) {
-                octokit = github.getOctokit(myToken);
+                octokit = github.getOctokit(botToken);
             }
-            yield createComment(issue_number, issue_translate_comment_body, octokit);
+            yield createComment(issueNumber, translateBody, octokit);
             core.setOutput('complete time', new Date().toTimeString());
         }
         catch (error) {
@@ -4519,14 +4531,14 @@ function detectIsEnglish(body) {
     core.info(`Detect comment body language result is: ${detectResult}`);
     return detectResult === 'eng';
 }
-function translateCommentBody(body, issue_user) {
+function translateCommentBody(body, issueUser) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = '';
         yield google_translate_api_1.default(body, { to: 'en' })
             .then(res => {
             result =
                 `
-> @${issue_user}  
+> @${issueUser}  
 > Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time👯.     
 ----  
 
@@ -4540,7 +4552,7 @@ ${res.text}
         return result;
     });
 }
-function createComment(issueId, body, octokit) {
+function createComment(issueNumber, body, octokit) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const { owner, repo } = github.context.repo;
@@ -4548,7 +4560,7 @@ function createComment(issueId, body, octokit) {
         yield octokit.issues.createComment({
             owner,
             repo,
-            issue_number: issueId,
+            issue_number: issueNumber,
             body
         });
         core.info(`complete to push translate issue comment: ${body} in ${issue_url} `);
