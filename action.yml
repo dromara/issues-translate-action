@@ -1,5 +1,7 @@
-name: 'issue translator'
+name: 'issues translate action'
 description: 'The action for translating non-english issues content to english.'
+icon: 'alert-octagon'
+color: 'orange'
 author: 'tomsun28'
 inputs:
   BOT_GITHUB_TOKEN: 
