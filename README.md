@@ -22,7 +22,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v1.2
+      - uses: tomsun28/issues-translate-action@v2.0
           
 
 ````
@@ -52,7 +52,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v1.2
+      - uses: tomsun28/issues-translate-action@v2.0
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} # required, input your bot github token
           # BOT_LOGIN_NAME: nameValue - not required, suggest not input, action will get name from BOT_GITHUB_TOKEN
