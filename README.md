@@ -12,11 +12,7 @@ The action for translating non-English issues comment content to English.
 
 ````
 name: 'issue-comment-translator'
-on: # support issue_comment issue
-  issues:
-  issue_comment:
-    branches:
-      - main
+on: [issues, issue_comment]
 
 jobs:
   build:
@@ -42,11 +38,7 @@ jobs:
 4. Create a workflow from this action    
 ````
 name: 'issue-comment-translator'
-on: # support issue_comment issue
-  issues:
-  issue_comment:
-    branches:
-      - main
+on: [issues, issue_comment]
 
 jobs:
   build:
