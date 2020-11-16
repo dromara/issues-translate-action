@@ -29,7 +29,12 @@ async function run(): Promise<void> {
       const issuePayload = github.context.payload as webhook.EventPayloads.WebhookPayloadIssues
       issueNumber = issuePayload.issue.number 
       issueUser = issuePayload.issue.user.login
-      originBody = issuePayload.issue.body
+      originBody = 
+      `
+**Title:** ${issuePayload.issue.title}  
+
+${issuePayload.issue.body}  
+      `
     }
 
     // detect comment body is english

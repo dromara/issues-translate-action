@@ -4473,7 +4473,12 @@ function run() {
                 const issuePayload = github.context.payload;
                 issueNumber = issuePayload.issue.number;
                 issueUser = issuePayload.issue.user.login;
-                originBody = issuePayload.issue.body;
+                originBody =
+                    `
+**Title:** ${issuePayload.issue.title}  
+
+${issuePayload.issue.body}  
+      `;
             }
             // detect comment body is english
             if (detectIsEnglish(originBody)) {
