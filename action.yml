@@ -1,4 +1,4 @@
-name: 'issues translate action'
+name: 'Issues Translator'
 description: 'The action for translating non-english issues content to english.'
 branding:
   icon: 'disc'
