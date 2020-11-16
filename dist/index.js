@@ -4544,7 +4544,7 @@ function translateCommentBody(body, issueUser) {
             result =
                 `
 > @${issueUser}  
-> Bot detected the comment body's language is not English, translate it automatically. For the convenience of others, please use English next time👯.     
+> Bot detected the issue body's language is not English, translate it automatically. For the convenience of others, please use English next time👯.     
 ----  
 
 ${res.text}  
