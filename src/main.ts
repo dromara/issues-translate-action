@@ -8,10 +8,10 @@ let franc = require('franc-min')
 async function run(): Promise<void> {
   try {
     if (
-      (github.context.eventName !== 'issue_comment' && github.context.eventName != 'issues') ||
-      (github.context.payload.action !== 'created' && github.context.payload.action !== 'opened')
+      (github.context.eventName !== 'issue_comment' || github.context.payload.action !== 'created') && 
+      (github.context.eventName != 'issues' || github.context.payload.action !== 'opened')
     ) {
-      core.setFailed(
+      core.info(
         `The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`
       )
       return

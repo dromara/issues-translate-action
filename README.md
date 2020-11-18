@@ -11,7 +11,7 @@ The action for translating non-English issues comment content to English.
 #### Create a workflow from this action   
 
 ````
-name: 'issue-comment-translator'
+name: 'issue-translator'
 on: [issues, issue_comment]
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
 
 4. Create a workflow from this action    
 ````
-name: 'issue-comment-translator'
+name: 'issue-translator'
 on: [issues, issue_comment]
 
 jobs:
