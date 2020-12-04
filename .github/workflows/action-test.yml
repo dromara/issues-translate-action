@@ -1,11 +1,7 @@
 name: 'build-test'
 on: 
-  issue_comment:
-    types:
-      - created
-  issues:
-    types:
-      - opened
+  issue_comment: [created]
+  issues: [opened]
 
 jobs:
   test: # make sure the action works on a clean machine without building
