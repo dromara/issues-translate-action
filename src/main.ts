@@ -9,7 +9,7 @@ async function run(): Promise<void> {
   try {
     if (
       (github.context.eventName !== 'issue_comment' || github.context.payload.action !== 'created') && 
-      (github.context.eventName != 'issues' || github.context.payload.action !== 'opened')
+      (github.context.eventName !== 'issues' || github.context.payload.action !== 'opened')
     ) {
       core.info(
         `The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`
@@ -105,7 +105,8 @@ async function translateCommentBody(body: string, issueUser: string): Promise<st
   let result = ''
   await translate(body, {to: 'en'})
     .then(res => {
-      result = 
+      if (res.text !== body) {
+        result = 
       `
 > @${issueUser}  
 > Bot detected the issue body's language is not English, translate it automatically. For the convenience of others, please use English next time👯.     
@@ -113,6 +114,7 @@ async function translateCommentBody(body: string, issueUser: string): Promise<st
 
 ${res.text}  
       `
+    }
     })
     .catch(err => {
       core.error(err)

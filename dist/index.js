@@ -4455,7 +4455,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             if ((github.context.eventName !== 'issue_comment' || github.context.payload.action !== 'created') &&
-                (github.context.eventName != 'issues' || github.context.payload.action !== 'opened')) {
+                (github.context.eventName !== 'issues' || github.context.payload.action !== 'opened')) {
                 core.info(`The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`);
                 return;
             }
@@ -4541,14 +4541,16 @@ function translateCommentBody(body, issueUser) {
         let result = '';
         yield google_translate_api_1.default(body, { to: 'en' })
             .then(res => {
-            result =
-                `
+            if (res.text !== body) {
+                result =
+                    `
 > @${issueUser}  
 > Bot detected the issue body's language is not English, translate it automatically. For the convenience of others, please use English next time👯.     
 ----  
 
 ${res.text}  
       `;
+            }
         })
             .catch(err => {
             core.error(err);
