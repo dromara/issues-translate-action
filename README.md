@@ -12,13 +12,17 @@ The action for translating non-English issues comment content to English.
 
 ````
 name: 'issue-translator'
-on: [issues, issue_comment]
+on: 
+  issue_comment: 
+    types: [created]
+  issues: 
+    types: [opened]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.1
+      - uses: tomsun28/issues-translate-action@v2.2
           
 
 ````
@@ -38,19 +42,27 @@ jobs:
 4. Create a workflow from this action    
 ````
 name: 'issue-translator'
-on: [issues, issue_comment]
+on: 
+  issue_comment: 
+    types: [created]
+  issues: 
+    types: [opened]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.1
+      - uses: tomsun28/issues-translate-action@v2.2
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} # required, input your bot github token
-          # BOT_LOGIN_NAME: nameValue - not required, suggest not input, action will get name from BOT_GITHUB_TOKEN
+          # BOT_LOGIN_NAME: nameValue - not required, suggest not input, action will get name from BOT_GITHUB_TOKEN. If input, BOT name must match github token
           
 
 ````
+
+## Rendering  
+
+![action-sample](dist/action-sample.png)  
 
 **Have Fun!**  
 
