@@ -1,5 +1,13 @@
 name: 'build-test'
-on: [issue_comment, issues]
+on: 
+  issue_comment:
+    types:
+      - opened
+      - created
+  issues:
+    types:
+      - opened
+      - created
 
 jobs:
   build: # make sure build/ci work properly
