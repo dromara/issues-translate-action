@@ -1,5 +1,5 @@
 name: 'Issues Translator'
-description: 'The action for translating non-english issues content to english.'
+description: 'The action for translating Non-English issues content to English.'
 branding:
   icon: 'disc'
   color: 'orange'
