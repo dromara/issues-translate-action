@@ -60,7 +60,7 @@ jobs:
 
 ````
 
-## Rendering  
+## DEMO  
 
 ![action-sample](dist/action-sample.png)  
 
