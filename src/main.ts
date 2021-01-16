@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as webhook from '@octokit/webhooks'
-import translate from '@k3rn31p4nic/google-translate-api'
+import translate from '@tomsun28/google-translate-api'
 
 let franc = require('franc-min')
 
