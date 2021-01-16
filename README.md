@@ -1,7 +1,7 @@
 
 # Issues Translate Action  
 
-The action for translating non-English issues comment content to English.   
+The action for translating Non-English issues content to English.   
 
 
 ## Usage  
@@ -22,9 +22,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.2
-          
-
+      - uses: tomsun28/issues-translate-action@v2.3
 ````
 
 
@@ -40,6 +38,7 @@ jobs:
 3. Add the Secrets BOT_GITHUB_TOKEN = ${token} in your project  
 
 4. Create a workflow from this action    
+
 ````
 name: 'issue-translator'
 on: 
@@ -52,12 +51,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.2
+      - uses: tomsun28/issues-translate-action@v2.3
         with:
-          BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} # required, input your bot github token
-          # BOT_LOGIN_NAME: nameValue - not required, suggest not input, action will get name from BOT_GITHUB_TOKEN. If input, BOT name must match github token
-          
-
+          BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
+          # Required, input your bot github token
+          BOT_LOGIN_NAME: Issues-translate-bot    
+          # Not required, suggest not input, action will get name from BOT_GITHUB_TOKEN
+          # If input, BOT name must match github token
 ````
 
 ## DEMO  
