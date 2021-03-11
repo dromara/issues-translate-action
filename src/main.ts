@@ -108,7 +108,7 @@ async function translateCommentBody(body: string, issueUser: string): Promise<st
       if (res.text !== body) {
         result = 
       ` 
-> Bot detected the issue body's language is not English, translate it automatically. 👯.     
+> Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿     
 ----  
 
 ${res.text}  

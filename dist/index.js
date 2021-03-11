@@ -4701,7 +4701,7 @@ function translateCommentBody(body, issueUser) {
             if (res.text !== body) {
                 result =
                     ` 
-> Bot detected the issue body's language is not English, translate it automatically. 👯.     
+> Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿     
 ----  
 
 ${res.text}  
