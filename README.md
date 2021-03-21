@@ -3,12 +3,15 @@
 
 The action for translating Non-English issues content to English.   
 
+[中文文档](README_CN.md)   
 
 ## Usage  
 
 > Use the default bot account @Issues-translate-bot  
 
 #### Create a workflow from this action   
+
+> Create file issue-translator.yml in .github/workflows/     
 
 ````
 name: 'issue-translator'
@@ -43,7 +46,7 @@ jobs:
 
 3. Add the Secrets BOT_GITHUB_TOKEN = ${token} in your project  
 
-4. Create a workflow from this action    
+4. Create a workflow from this action(Create file issue-translator.yml in .github/workflows/)    
 
 ````
 name: 'issue-translator'
