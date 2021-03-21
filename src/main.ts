@@ -34,18 +34,6 @@ async function run(): Promise<void> {
       issueUser = issuePayload.issue.user.login
       originComment = issuePayload.issue.body
       originTitle = issuePayload.issue.title
-
-      if (isModifyTitle === 'true') {
-        originComment = issuePayload.issue.body
-        originTitle = issuePayload.issue.title
-      } else {
-        originComment = 
-        `
-  **Title:** ${issuePayload.issue.title}  
-  
-  ${issuePayload.issue.body}  
-        `
-      }
     }
 
     let translateOrigin = originComment + '@====@' + originTitle
@@ -78,6 +66,7 @@ async function run(): Promise<void> {
       return
     }
     
+    core.info(`translate origin body is: ${translateOrigin}`)
 
     // translate issue comment body to english
     const translateTmp = await translateIssueOrigin(translateOrigin)
@@ -93,6 +82,7 @@ async function run(): Promise<void> {
     let translateComment = null
     let translateTitle = null
 
+    core.info(`translate body is: ${translateTmp}`)
 
     if (translateBody.length == 1) {
       translateComment = translateBody[0]
@@ -126,7 +116,7 @@ ${translateComment}
       `
     }
 
-    if (isModifyTitle === 'true') {
+    if (isModifyTitle === 'true' && translateTitle != null) {
       await modifyTitle(issueNumber, translateTitle, octokit)
     }
 

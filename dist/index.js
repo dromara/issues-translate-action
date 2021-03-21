@@ -4635,18 +4635,6 @@ function run() {
                 issueUser = issuePayload.issue.user.login;
                 originComment = issuePayload.issue.body;
                 originTitle = issuePayload.issue.title;
-                if (isModifyTitle === 'true') {
-                    originComment = issuePayload.issue.body;
-                    originTitle = issuePayload.issue.title;
-                }
-                else {
-                    originComment =
-                        `
-  **Title:** ${issuePayload.issue.title}  
-  
-  ${issuePayload.issue.body}  
-        `;
-                }
             }
             let translateOrigin = originComment + '@====@' + originTitle;
             // detect issue title comment body is english
@@ -4674,6 +4662,7 @@ function run() {
                 core.info(`The issue comment user is bot ${botLoginName} himself, ignore return.`);
                 return;
             }
+            core.info(`translate origin body is: ${translateOrigin}`);
             // translate issue comment body to english
             const translateTmp = yield translateIssueOrigin(translateOrigin);
             if (translateTmp === null
@@ -4685,6 +4674,7 @@ function run() {
             let translateBody = translateTmp.split('@====@');
             let translateComment = null;
             let translateTitle = null;
+            core.info(`translate body is: ${translateTmp}`);
             if (translateBody.length == 1) {
                 translateComment = translateBody[0];
             }
@@ -4718,7 +4708,7 @@ ${translateComment}
 ${translateComment}  
       `;
             }
-            if (isModifyTitle === 'true') {
+            if (isModifyTitle === 'true' && translateTitle != null) {
                 yield modifyTitle(issueNumber, translateTitle, octokit);
             }
             yield createComment(issueNumber, translateComment, octokit);
