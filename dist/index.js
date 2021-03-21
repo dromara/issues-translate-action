@@ -4617,28 +4617,40 @@ function run() {
                 return;
             }
             let issueNumber = null;
-            let originBody = null;
+            let originComment = null;
+            let originTitle = null;
             let issueUser = null;
+            let botNote = "Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿";
+            let isModifyTitle = core.getInput('IS_MODIFY_TITLE');
             if (github.context.eventName === 'issue_comment') {
                 const issueCommentPayload = github.context
                     .payload;
                 issueNumber = issueCommentPayload.issue.number;
                 issueUser = issueCommentPayload.comment.user.login;
-                originBody = issueCommentPayload.comment.body;
+                originComment = issueCommentPayload.comment.body;
             }
             else {
                 const issuePayload = github.context.payload;
                 issueNumber = issuePayload.issue.number;
                 issueUser = issuePayload.issue.user.login;
-                originBody =
-                    `
-**Title:** ${issuePayload.issue.title}  
-
-${issuePayload.issue.body}  
-      `;
+                originComment = issuePayload.issue.body;
+                originTitle = issuePayload.issue.title;
+                if (isModifyTitle === 'true') {
+                    originComment = issuePayload.issue.body;
+                    originTitle = issuePayload.issue.title;
+                }
+                else {
+                    originComment =
+                        `
+  **Title:** ${issuePayload.issue.title}  
+  
+  ${issuePayload.issue.body}  
+        `;
+                }
             }
-            // detect comment body is english
-            if (detectIsEnglish(originBody)) {
+            let translateOrigin = originComment + '@====@' + originTitle;
+            // detect issue title comment body is english
+            if (detectIsEnglish(translateOrigin)) {
                 core.info('Detect the issue comment body is english already, ignore return.');
                 return;
             }
@@ -4663,18 +4675,53 @@ ${issuePayload.issue.body}
                 return;
             }
             // translate issue comment body to english
-            const translateBody = yield translateCommentBody(originBody, issueUser);
-            if (translateBody === null
-                || translateBody === ''
-                || translateBody === originBody) {
+            const translateTmp = yield translateIssueOrigin(translateOrigin);
+            if (translateTmp === null
+                || translateTmp === ''
+                || translateTmp === translateOrigin) {
                 core.warning("The translateBody is null or same, ignore return.");
                 return;
+            }
+            let translateBody = translateTmp.split('@====@');
+            let translateComment = null;
+            let translateTitle = null;
+            if (translateBody.length == 1) {
+                translateComment = translateBody[0];
+            }
+            else if (translateBody.length == 2) {
+                translateComment = translateBody[0];
+                translateTitle = translateBody[1];
+            }
+            else {
+                core.setFailed(`the translateBody is ${translateTmp}`);
             }
             // create comment by bot
             if (octokit === null) {
                 octokit = github.getOctokit(botToken);
             }
-            yield createComment(issueNumber, translateBody, octokit);
+            if (translateTitle !== null && isModifyTitle === 'false') {
+                translateComment =
+                    ` 
+> ${botNote}      
+----  
+**Title:** ${translateTitle}    
+
+${translateComment}  
+      `;
+            }
+            else {
+                translateComment =
+                    ` 
+> ${botNote}         
+----    
+
+${translateComment}  
+      `;
+            }
+            if (isModifyTitle === 'true') {
+                yield modifyTitle(issueNumber, translateTitle, octokit);
+            }
+            yield createComment(issueNumber, translateComment, octokit);
             core.setOutput('complete time', new Date().toTimeString());
         }
         catch (error) {
@@ -4683,6 +4730,9 @@ ${issuePayload.issue.body}
     });
 }
 function detectIsEnglish(body) {
+    if (body === null) {
+        return true;
+    }
     const detectResult = franc(body);
     if (detectResult === 'und'
         || detectResult === undefined
@@ -4693,19 +4743,13 @@ function detectIsEnglish(body) {
     core.info(`Detect comment body language result is: ${detectResult}`);
     return detectResult === 'eng';
 }
-function translateCommentBody(body, issueUser) {
+function translateIssueOrigin(body) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = '';
         yield google_translate_api_1.default(body, { to: 'en' })
             .then(res => {
             if (res.text !== body) {
-                result =
-                    ` 
-> Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿     
-----  
-
-${res.text}  
-      `;
+                result = res.text;
             }
         })
             .catch(err => {
@@ -4727,6 +4771,20 @@ function createComment(issueNumber, body, octokit) {
             body
         });
         core.info(`complete to push translate issue comment: ${body} in ${issue_url} `);
+    });
+}
+function modifyTitle(issueNumber, title, octokit) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const { owner, repo } = github.context.repo;
+        const issue_url = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.html_url;
+        yield octokit.issues.update({
+            owner,
+            repo,
+            issue_number: issueNumber,
+            title
+        });
+        core.info(`complete to modify translate issue title: ${title} in ${issue_url} `);
     });
 }
 run();

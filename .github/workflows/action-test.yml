@@ -13,3 +13,6 @@ jobs:
       - uses: ./
         # with:
           # BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        with:
+          IS_MODIFY_TITLE: true 
+          
