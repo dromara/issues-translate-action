@@ -4622,12 +4622,14 @@ function run() {
             let issueUser = null;
             let botNote = "Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿";
             let isModifyTitle = core.getInput('IS_MODIFY_TITLE');
+            let translateOrigin = null;
             if (github.context.eventName === 'issue_comment') {
                 const issueCommentPayload = github.context
                     .payload;
                 issueNumber = issueCommentPayload.issue.number;
                 issueUser = issueCommentPayload.comment.user.login;
                 originComment = issueCommentPayload.comment.body;
+                translateOrigin = originComment;
             }
             else {
                 const issuePayload = github.context.payload;
@@ -4635,8 +4637,8 @@ function run() {
                 issueUser = issuePayload.issue.user.login;
                 originComment = issuePayload.issue.body;
                 originTitle = issuePayload.issue.title;
+                translateOrigin = originComment + '@====@' + originTitle;
             }
-            let translateOrigin = originComment + '@====@' + originTitle;
             // detect issue title comment body is english
             if (detectIsEnglish(translateOrigin)) {
                 core.info('Detect the issue comment body is english already, ignore return.');
@@ -4651,6 +4653,11 @@ function run() {
                 const defaultBotLoginName = 'Issues-translate-bot';
                 botToken = Buffer.from(defaultBotTokenBase64, 'base64').toString();
                 botLoginName = defaultBotLoginName;
+            }
+            // support custom bot note message
+            let customBotMessage = core.getInput('CUSTOM_BOT_NOTE');
+            if (customBotMessage !== null && customBotMessage.trim() !== "") {
+                botNote = customBotMessage;
             }
             let octokit = null;
             if (botLoginName === null || botLoginName === undefined || botLoginName === '') {
@@ -4676,11 +4683,11 @@ function run() {
             let translateTitle = null;
             core.info(`translate body is: ${translateTmp}`);
             if (translateBody.length == 1) {
-                translateComment = translateBody[0];
+                translateComment = translateBody[0].trim();
             }
             else if (translateBody.length == 2) {
-                translateComment = translateBody[0];
-                translateTitle = translateBody[1];
+                translateComment = translateBody[0].trim();
+                translateTitle = translateBody[1].trim();
             }
             else {
                 core.setFailed(`the translateBody is ${translateTmp}`);
