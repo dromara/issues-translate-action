@@ -4637,7 +4637,7 @@ function run() {
                 issueUser = issuePayload.issue.user.login;
                 originComment = issuePayload.issue.body;
                 originTitle = issuePayload.issue.title;
-                translateOrigin = originComment + '@====@' + originTitle;
+                translateOrigin = originComment + '@@====' + originTitle;
             }
             // detect issue title comment body is english
             if (detectIsEnglish(translateOrigin)) {
@@ -4678,7 +4678,7 @@ function run() {
                 core.warning("The translateBody is null or same, ignore return.");
                 return;
             }
-            let translateBody = translateTmp.split('@====@');
+            let translateBody = translateTmp.split('@@====');
             let translateComment = null;
             let translateTitle = null;
             core.info(`translate body is: ${translateTmp}`);

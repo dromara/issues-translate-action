@@ -36,7 +36,7 @@ async function run(): Promise<void> {
       issueUser = issuePayload.issue.user.login
       originComment = issuePayload.issue.body
       originTitle = issuePayload.issue.title
-      translateOrigin = originComment + '@====@' + originTitle
+      translateOrigin = originComment + '@@====' + originTitle
     }
 
     // detect issue title comment body is english
@@ -85,7 +85,7 @@ async function run(): Promise<void> {
       return
     }
 
-    let translateBody:string[] = translateTmp.split('@====@')
+    let translateBody:string[] = translateTmp.split('@@====')
     let translateComment = null
     let translateTitle = null
 
