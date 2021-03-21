@@ -9,6 +9,8 @@ inputs:
     description: 'The issue comment bot GITHUB_TOKEN.'
   BOT_LOGIN_NAME:
     description: 'The issue comment bot github login name.'
+  IS_MODIFY_TITLE: 
+    description: 'Is need modify issue title, true or false, default false.'
 runs:
   using: 'node12'
   main: 'dist/index.js'

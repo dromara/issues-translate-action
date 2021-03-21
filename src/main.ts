@@ -17,28 +17,41 @@ async function run(): Promise<void> {
       return
     }
     let issueNumber = null
-    let originBody = null 
+    let originComment = null 
+    let originTitle = null 
     let issueUser = null
+    let botNote = "Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿"
+    let isModifyTitle = core.getInput('IS_MODIFY_TITLE')
     if (github.context.eventName === 'issue_comment') {
       const issueCommentPayload = github.context
       .payload as webhook.EventPayloads.WebhookPayloadIssueComment
       issueNumber = issueCommentPayload.issue.number
       issueUser = issueCommentPayload.comment.user.login
-      originBody = issueCommentPayload.comment.body
+      originComment = issueCommentPayload.comment.body
     } else {
       const issuePayload = github.context.payload as webhook.EventPayloads.WebhookPayloadIssues
       issueNumber = issuePayload.issue.number 
       issueUser = issuePayload.issue.user.login
-      originBody = 
-      `
-**Title:** ${issuePayload.issue.title}  
+      originComment = issuePayload.issue.body
+      originTitle = issuePayload.issue.title
 
-${issuePayload.issue.body}  
-      `
+      if (isModifyTitle === 'true') {
+        originComment = issuePayload.issue.body
+        originTitle = issuePayload.issue.title
+      } else {
+        originComment = 
+        `
+  **Title:** ${issuePayload.issue.title}  
+  
+  ${issuePayload.issue.body}  
+        `
+      }
     }
 
-    // detect comment body is english
-    if (detectIsEnglish(originBody)) {
+    let translateOrigin = originComment + '@====@' + originTitle
+
+    // detect issue title comment body is english
+    if (detectIsEnglish(translateOrigin)) {
       core.info('Detect the issue comment body is english already, ignore return.')
       return
     }
@@ -67,29 +80,67 @@ ${issuePayload.issue.body}
     
 
     // translate issue comment body to english
-    const translateBody = await translateCommentBody(
-      originBody, issueUser
-    )
+    const translateTmp = await translateIssueOrigin(translateOrigin)
 
-    if (translateBody === null 
-      || translateBody === '' 
-      || translateBody === originBody) {
+    if (translateTmp === null 
+      || translateTmp === '' 
+      || translateTmp === translateOrigin) {
       core.warning("The translateBody is null or same, ignore return.")
       return
+    }
+
+    let translateBody:string[] = translateTmp.split('@====@')
+    let translateComment = null
+    let translateTitle = null
+
+
+    if (translateBody.length == 1) {
+      translateComment = translateBody[0]
+    } else if (translateBody.length == 2) {
+      translateComment = translateBody[0]
+      translateTitle = translateBody[1]
+    } else {
+      core.setFailed(`the translateBody is ${translateTmp}`)
     }
 
     // create comment by bot
     if (octokit === null) {
       octokit = github.getOctokit(botToken)
     }
-    await createComment(issueNumber, translateBody, octokit)
+    if (translateTitle !== null && isModifyTitle === 'false') {
+      translateComment = 
+      ` 
+> ${botNote}      
+----  
+**Title:** ${translateTitle}    
+
+${translateComment}  
+      `
+    } else {
+      translateComment = 
+      ` 
+> ${botNote}         
+----    
+
+${translateComment}  
+      `
+    }
+
+    if (isModifyTitle === 'true') {
+      await modifyTitle(issueNumber, translateTitle, octokit)
+    }
+
+    await createComment(issueNumber, translateComment, octokit)
     core.setOutput('complete time', new Date().toTimeString())
   } catch (error) {
     core.setFailed(error.message)
   }
 }
 
-function detectIsEnglish(body: string): boolean | true {
+function detectIsEnglish(body: string | null): boolean | true {
+  if (body === null) {
+    return true 
+  }
   const detectResult = franc(body)
   if (detectResult === 'und' 
   || detectResult === undefined 
@@ -101,19 +152,13 @@ function detectIsEnglish(body: string): boolean | true {
   return detectResult === 'eng'
 }
 
-async function translateCommentBody(body: string, issueUser: string): Promise<string> {
+async function translateIssueOrigin(body: string): Promise<string> {
   let result = ''
   await translate(body, {to: 'en'})
     .then(res => {
       if (res.text !== body) {
-        result = 
-      ` 
-> Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿     
-----  
-
-${res.text}  
-      `
-    }
+        result = res.text
+      }
     })
     .catch(err => {
       core.error(err)
@@ -122,7 +167,7 @@ ${res.text}
   return result
 }
 
-async function createComment(issueNumber: number, body: string, octokit: any): Promise<void> {
+async function createComment(issueNumber: number, body: string | null, octokit: any): Promise<void> {
   const {owner, repo} = github.context.repo
   const issue_url = github.context.payload.issue?.html_url
   await octokit.issues.createComment({
@@ -132,6 +177,18 @@ async function createComment(issueNumber: number, body: string, octokit: any): P
     body
   }) 
   core.info(`complete to push translate issue comment: ${body} in ${issue_url} `)
+}
+
+async function modifyTitle(issueNumber: number, title: string | null, octokit: any): Promise<void> {
+  const {owner, repo} = github.context.repo
+  const issue_url = github.context.payload.issue?.html_url
+  await octokit.issues.update({
+    owner,
+    repo,
+    issue_number: issueNumber,
+    title
+  })
+  core.info(`complete to modify translate issue title: ${title} in ${issue_url} `)
 }
 
 run()
