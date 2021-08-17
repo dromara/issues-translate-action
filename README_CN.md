@@ -23,7 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.5
+      - uses: tomsun28/issues-translate-action@v2.6
         with:
           IS_MODIFY_TITLE: false
           # 非必须，决定是否需要修改issue标题内容   
@@ -58,7 +58,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.5
+      - uses: tomsun28/issues-translate-action@v2.6
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
           # 非必须，填写您的机器人github账户token

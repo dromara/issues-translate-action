@@ -25,7 +25,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.5
+      - uses: tomsun28/issues-translate-action@v2.6
         with:
           IS_MODIFY_TITLE: false
           # not require, default false, . Decide whether to modify the issue title
@@ -60,7 +60,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.5
+      - uses: tomsun28/issues-translate-action@v2.6
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
           # Required, input your bot github token
