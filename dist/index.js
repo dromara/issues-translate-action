@@ -4611,8 +4611,10 @@ let franc = __webpack_require__(554);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            if ((github.context.eventName !== 'issue_comment' || github.context.payload.action !== 'created') &&
-                (github.context.eventName !== 'issues' || github.context.payload.action !== 'opened')) {
+            if ((github.context.eventName !== 'issue_comment' ||
+                github.context.payload.action !== 'created') &&
+                (github.context.eventName !== 'issues' ||
+                    github.context.payload.action !== 'opened')) {
                 core.info(`The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`);
                 return;
             }
@@ -4623,25 +4625,46 @@ function run() {
             let botNote = "Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿";
             let isModifyTitle = core.getInput('IS_MODIFY_TITLE');
             let translateOrigin = null;
+            let needCommitComment = true;
+            let needCommitTitle = true;
             if (github.context.eventName === 'issue_comment') {
                 const issueCommentPayload = github.context
                     .payload;
                 issueNumber = issueCommentPayload.issue.number;
                 issueUser = issueCommentPayload.comment.user.login;
                 originComment = issueCommentPayload.comment.body;
+                if (originComment === null || originComment === 'null') {
+                    needCommitComment = false;
+                }
                 translateOrigin = originComment;
+                needCommitTitle = false;
             }
             else {
-                const issuePayload = github.context.payload;
+                const issuePayload = github.context
+                    .payload;
                 issueNumber = issuePayload.issue.number;
                 issueUser = issuePayload.issue.user.login;
                 originComment = issuePayload.issue.body;
+                if (originComment === null || originComment === 'null') {
+                    needCommitComment = false;
+                }
                 originTitle = issuePayload.issue.title;
+                if (originTitle === null || originTitle === 'null') {
+                    needCommitTitle = false;
+                }
                 translateOrigin = originComment + '@@====' + originTitle;
             }
             // detect issue title comment body is english
-            if (detectIsEnglish(translateOrigin)) {
-                core.info('Detect the issue comment body is english already, ignore return.');
+            if (originComment !== null && detectIsEnglish(originComment)) {
+                needCommitComment = false;
+                core.info('Detect the issue comment body is english already, ignore.');
+            }
+            if (originTitle !== null && detectIsEnglish(originTitle)) {
+                needCommitTitle = false;
+                core.info('Detect the issue title body is english already, ignore.');
+            }
+            if (!needCommitTitle && !needCommitComment) {
+                core.info('Detect the issue do not need translated, return.');
                 return;
             }
             // ignore when bot comment issue himself
@@ -4656,11 +4679,13 @@ function run() {
             }
             // support custom bot note message
             let customBotMessage = core.getInput('CUSTOM_BOT_NOTE');
-            if (customBotMessage !== null && customBotMessage.trim() !== "") {
+            if (customBotMessage !== null && customBotMessage.trim() !== '') {
                 botNote = customBotMessage;
             }
             let octokit = null;
-            if (botLoginName === null || botLoginName === undefined || botLoginName === '') {
+            if (botLoginName === null ||
+                botLoginName === undefined ||
+                botLoginName === '') {
                 octokit = github.getOctokit(botToken);
                 const botInfo = yield octokit.request('GET /user');
                 botLoginName = botInfo.data.login;
@@ -4672,10 +4697,10 @@ function run() {
             core.info(`translate origin body is: ${translateOrigin}`);
             // translate issue comment body to english
             const translateTmp = yield translateIssueOrigin(translateOrigin);
-            if (translateTmp === null
-                || translateTmp === ''
-                || translateTmp === translateOrigin) {
-                core.warning("The translateBody is null or same, ignore return.");
+            if (translateTmp === null ||
+                translateTmp === '' ||
+                translateTmp === translateOrigin) {
+                core.warning('The translateBody is null or same, ignore return.');
                 return;
             }
             let translateBody = translateTmp.split('@@====');
@@ -4696,9 +4721,10 @@ function run() {
             if (octokit === null) {
                 octokit = github.getOctokit(botToken);
             }
-            if (translateTitle !== null && isModifyTitle === 'false') {
-                translateComment =
-                    ` 
+            if (isModifyTitle === 'false' &&
+                needCommitTitle === true &&
+                needCommitComment == true) {
+                translateComment = ` 
 > ${botNote}      
 ----  
 **Title:** ${translateTitle}    
@@ -4706,19 +4732,31 @@ function run() {
 ${translateComment}  
       `;
             }
-            else {
-                translateComment =
-                    ` 
+            else if (isModifyTitle === 'false' &&
+                needCommitTitle === true &&
+                needCommitComment == false) {
+                translateComment = ` 
+> ${botNote}      
+----  
+**Title:** ${translateTitle}    
+      `;
+            }
+            else if (needCommitComment) {
+                translateComment = ` 
 > ${botNote}         
 ----    
-
 ${translateComment}  
       `;
             }
-            if (isModifyTitle === 'true' && translateTitle != null) {
+            else {
+                translateComment = null;
+            }
+            if (isModifyTitle === 'true' && translateTitle != null && needCommitTitle) {
                 yield modifyTitle(issueNumber, translateTitle, octokit);
             }
-            yield createComment(issueNumber, translateComment, octokit);
+            if (translateComment !== null) {
+                yield createComment(issueNumber, translateComment, octokit);
+            }
             core.setOutput('complete time', new Date().toTimeString());
         }
         catch (error) {
@@ -4731,9 +4769,9 @@ function detectIsEnglish(body) {
         return true;
     }
     const detectResult = franc(body);
-    if (detectResult === 'und'
-        || detectResult === undefined
-        || detectResult === null) {
+    if (detectResult === 'und' ||
+        detectResult === undefined ||
+        detectResult === null) {
         core.warning(`Can not detect the undetermined comment body: ${body}`);
         return false;
     }
