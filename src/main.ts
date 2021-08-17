@@ -37,7 +37,6 @@ async function run(): Promise<void> {
       if (originComment === null || originComment === 'null') {
         needCommitComment = false
       }
-      translateOrigin = originComment
       needCommitTitle = false
     } else {
       const issuePayload = github.context
@@ -52,7 +51,6 @@ async function run(): Promise<void> {
       if (originTitle === null || originTitle === 'null') {
         needCommitTitle = false
       }
-      translateOrigin = originComment + '@@====' + originTitle
     }
 
     // detect issue title comment body is english
@@ -67,6 +65,13 @@ async function run(): Promise<void> {
     if (!needCommitTitle && !needCommitComment) {
       core.info('Detect the issue do not need translated, return.')
       return
+    }
+    if (needCommitComment && needCommitTitle) {
+      translateOrigin = originComment + '@@====' + originTitle
+    } else if (needCommitComment) {
+      translateOrigin = originComment
+    } else {
+      translateOrigin = 'null@@====' + originTitle
     }
 
     // ignore when bot comment issue himself
@@ -126,9 +131,18 @@ async function run(): Promise<void> {
 
     if (translateBody.length == 1) {
       translateComment = translateBody[0].trim()
+      if (translateComment === originComment) {
+        needCommitComment = false
+      }
     } else if (translateBody.length == 2) {
       translateComment = translateBody[0].trim()
       translateTitle = translateBody[1].trim()
+      if (translateComment === originComment) {
+        needCommitComment = false
+      }
+      if (translateTitle === originTitle) {
+        needCommitTitle = false
+      }
     } else {
       core.setFailed(`the translateBody is ${translateTmp}`)
     }
