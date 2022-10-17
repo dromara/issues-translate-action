@@ -24,6 +24,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "chenquan",
+      "name": "chen quan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20548053?v=4",
+      "profile": "https://dev.to/chenquan",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -31,5 +40,6 @@
   "projectOwner": "usthe",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }
