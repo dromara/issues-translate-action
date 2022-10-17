@@ -86,10 +86,6 @@ Post an issue in [issues-translate-action](https://github.com/tomsun28/issues-tr
 **Have Fun!**  
 
 
-
-
-
-
 ## Contributors ✨ 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
