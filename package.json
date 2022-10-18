@@ -23,9 +23,9 @@
     "setup",
     "translate",
     "issues",
-    "location"
+    "localization"
   ],
-  "author": "",
+  "author": "tomsun28",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
