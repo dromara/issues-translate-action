@@ -2,7 +2,6 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as webhook from '@octokit/webhooks'
 import translate from '@tomsun28/google-translate-api'
-
 const franc = require('franc-min')
 
 async function run(): Promise<void> {
