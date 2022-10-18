@@ -28,8 +28,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "1.9.1",
-    "@actions/github": "5.0.0",
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
     "@octokit/webhooks": "7.15.1",
     "@tomsun28/google-translate-api": "1.1.2",
     "franc-min": "5.0.0"
