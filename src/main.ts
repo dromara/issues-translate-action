@@ -187,7 +187,7 @@ ${translateComment}
     }
     core.setOutput('complete time', new Date().toTimeString())
   } catch (error: any) {
-    core.setFailed(error)
+    core.setFailed(error.message)
   }
 }
 
