@@ -24,7 +24,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.6
+      - uses: usthe/issues-translate-action@v2.7
         with:
           IS_MODIFY_TITLE: false
           # not require, default false, . Decide whether to modify the issue title
@@ -59,7 +59,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: tomsun28/issues-translate-action@v2.6
+      - uses: usthe/issues-translate-action@v2.7
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
           # Required, input your bot github token
@@ -73,7 +73,7 @@ jobs:
 
 1. invite @Issues-translate-bot to your project.    
 Project -> Settings -> Manage access -> Invite a collaborator   
-Post an issue in [issues-translate-action](https://github.com/tomsun28/issues-translate-action) to let us konw, the @Issues-translate-bot will join soon.    
+Post an issue in [issues-translate-action](https://github.com/tomsun28/issues-translate-action) to let us know, the @Issues-translate-bot will join soon.    
 
 ## DEMO  
 

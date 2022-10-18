@@ -1,6 +1,6 @@
 {
   "name": "issues-translator",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "description": "The action for translating Non-English issues content to English.",
   "main": "lib/main.js",
