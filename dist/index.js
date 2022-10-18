@@ -4607,7 +4607,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
 const google_translate_api_1 = __importDefault(__webpack_require__(771));
-let franc = __webpack_require__(554);
+const franc = __webpack_require__(554);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -4623,7 +4623,7 @@ function run() {
             let originTitle = null;
             let issueUser = null;
             let botNote = "Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿";
-            let isModifyTitle = core.getInput('IS_MODIFY_TITLE');
+            const isModifyTitle = core.getInput('IS_MODIFY_TITLE');
             let translateOrigin = null;
             let needCommitComment = true;
             let needCommitTitle = true;
@@ -4666,13 +4666,13 @@ function run() {
                 return;
             }
             if (needCommitComment && needCommitTitle) {
-                translateOrigin = originComment + '@@====' + originTitle;
+                translateOrigin = `${originComment}@@====${originTitle}`;
             }
             else if (needCommitComment) {
                 translateOrigin = originComment;
             }
             else {
-                translateOrigin = 'null@@====' + originTitle;
+                translateOrigin = `null@@====${originTitle}`;
             }
             // ignore when bot comment issue himself
             let botToken = core.getInput('BOT_GITHUB_TOKEN');
@@ -4685,7 +4685,7 @@ function run() {
                 botLoginName = defaultBotLoginName;
             }
             // support custom bot note message
-            let customBotMessage = core.getInput('CUSTOM_BOT_NOTE');
+            const customBotMessage = core.getInput('CUSTOM_BOT_NOTE');
             if (customBotMessage !== null && customBotMessage.trim() !== '') {
                 botNote = customBotMessage;
             }
@@ -4710,7 +4710,7 @@ function run() {
                 core.warning('The translateBody is null or same, ignore return.');
                 return;
             }
-            let translateBody = translateTmp.split('@@====');
+            const translateBody = translateTmp.split('@@====');
             let translateComment = null;
             let translateTitle = null;
             core.info(`translate body is: ${translateTmp}`);
@@ -4737,9 +4737,7 @@ function run() {
             if (octokit === null) {
                 octokit = github.getOctokit(botToken);
             }
-            if (isModifyTitle === 'false' &&
-                needCommitTitle === true &&
-                needCommitComment == true) {
+            if (isModifyTitle === 'false' && needCommitTitle && needCommitComment) {
                 translateComment = ` 
 > ${botNote}      
 ----  
@@ -4749,8 +4747,8 @@ ${translateComment}
       `;
             }
             else if (isModifyTitle === 'false' &&
-                needCommitTitle === true &&
-                needCommitComment == false) {
+                needCommitTitle &&
+                !needCommitComment) {
                 translateComment = ` 
 > ${botNote}      
 ----  

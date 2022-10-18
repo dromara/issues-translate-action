@@ -15,22 +15,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/usthe/issues-translate-action.git"
   },
   "keywords": [
     "actions",
     "node",
-    "setup"
+    "setup",
+    "translate",
+    "issues",
+    "localization"
   ],
-  "author": "",
+  "author": "tomsun28",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
-    "@k3rn31p4nic/google-translate-api": "^1.1.1",
-    "@octokit/webhooks": "^7.15.1",
-    "@tomsun28/google-translate-api": "^1.1.2",
-    "franc-min": "^5.0.0"
+    "@octokit/webhooks": "7.15.1",
+    "@tomsun28/google-translate-api": "1.1.2",
+    "franc-min": "5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",

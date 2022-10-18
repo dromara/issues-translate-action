@@ -2,8 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as webhook from '@octokit/webhooks'
 import translate from '@tomsun28/google-translate-api'
-
-let franc = require('franc-min')
+const franc = require('franc-min')
 
 async function run(): Promise<void> {
   try {
@@ -24,7 +23,7 @@ async function run(): Promise<void> {
     let issueUser = null
     let botNote =
       "Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿"
-    let isModifyTitle = core.getInput('IS_MODIFY_TITLE')
+    const isModifyTitle = core.getInput('IS_MODIFY_TITLE')
     let translateOrigin = null
     let needCommitComment = true
     let needCommitTitle = true
@@ -67,11 +66,11 @@ async function run(): Promise<void> {
       return
     }
     if (needCommitComment && needCommitTitle) {
-      translateOrigin = originComment + '@@====' + originTitle
+      translateOrigin = `${originComment}@@====${originTitle}`
     } else if (needCommitComment) {
       translateOrigin = originComment
     } else {
-      translateOrigin = 'null@@====' + originTitle
+      translateOrigin = `null@@====${originTitle}`
     }
 
     // ignore when bot comment issue himself
@@ -87,7 +86,7 @@ async function run(): Promise<void> {
     }
 
     // support custom bot note message
-    let customBotMessage = core.getInput('CUSTOM_BOT_NOTE')
+    const customBotMessage = core.getInput('CUSTOM_BOT_NOTE')
     if (customBotMessage !== null && customBotMessage.trim() !== '') {
       botNote = customBotMessage
     }
@@ -123,7 +122,7 @@ async function run(): Promise<void> {
       return
     }
 
-    let translateBody: string[] = translateTmp.split('@@====')
+    const translateBody: string[] = translateTmp.split('@@====')
     let translateComment = null
     let translateTitle = null
 
@@ -151,11 +150,7 @@ async function run(): Promise<void> {
     if (octokit === null) {
       octokit = github.getOctokit(botToken)
     }
-    if (
-      isModifyTitle === 'false' &&
-      needCommitTitle === true &&
-      needCommitComment == true
-    ) {
+    if (isModifyTitle === 'false' && needCommitTitle && needCommitComment) {
       translateComment = ` 
 > ${botNote}      
 ----  
@@ -165,8 +160,8 @@ ${translateComment}
       `
     } else if (
       isModifyTitle === 'false' &&
-      needCommitTitle === true &&
-      needCommitComment == false
+      needCommitTitle &&
+      !needCommitComment
     ) {
       translateComment = ` 
 > ${botNote}      
@@ -191,7 +186,7 @@ ${translateComment}
       await createComment(issueNumber, translateComment, octokit)
     }
     core.setOutput('complete time', new Date().toTimeString())
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message)
   }
 }
