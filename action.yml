@@ -13,6 +13,8 @@ inputs:
     description: 'Is need modify issue title, true or false, default false.'
   CUSTOM_BOT_NOTE:
     description: 'Custom bot note message.'
+  APPEND_TRANSLATION:
+    description: 'append translation content into issue instead of create new translation issue.'
 runs:
   using: 'node16'
   main: 'dist/index.js'
