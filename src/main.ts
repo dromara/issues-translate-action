@@ -25,7 +25,7 @@ async function run(): Promise<void> {
     }
 
     const isModifyTitle = core.getInput('IS_MODIFY_TITLE')
-    const shouldAppendContent = core.getInput('APPEND_CONTENT')
+    const shouldAppendContent = core.getInput('APPEND_TRANSLATION')
     const issueNumber = issue?.number;
     const originTitle = issue?.title?.split(TRANSLATE_TITLE_DIVING)?.[0];
     const originComment = (isIssueComment ? comment?.body : issue?.body)?.split(TRANSLATE_DIVIDING_LINE)?.[0];
