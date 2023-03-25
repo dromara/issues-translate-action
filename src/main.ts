@@ -38,7 +38,7 @@ async function run(): Promise<void> {
     const originComment = (isIssueComment ? comment?.body : issue?.body)?.split(
       TRANSLATE_DIVIDING_LINE
     )?.[0]
-    const issueUser = isIssueComment ? comment?.user?.login : issue?.user?.login
+    // const issueUser = isIssueComment ? comment?.user?.login : issue?.user?.login
     const botNote =
       core.getInput('CUSTOM_BOT_NOTE')?.trim() || DEFAULT_BOT_MESSAGE
 
