@@ -12,22 +12,20 @@ async function run(): Promise<void> {
     const {
       context: {
         eventName,
-        payload: {issue, comment}
+        payload: {issue, discussion, comment}
       }
     } = github
 
     core.info(JSON.stringify(github.context))
 
-    const isIssueComment = eventName === 'issue_comment'
-
     const isModifyTitle = core.getInput('IS_MODIFY_TITLE')
     const shouldAppendContent = core.getInput('APPEND_TRANSLATION')
     const originTitle = issue?.title?.split(TRANSLATE_TITLE_DIVING)?.[0]
-    const originComment = (isIssueComment ? comment?.body : issue?.body)?.split(
-      TRANSLATE_DIVIDING_LINE
-    )?.[0]
+    const originComment = (eventName.endsWith('_comment')
+      ? comment?.body
+      : discussion?.body || issue?.body
+    )?.split(TRANSLATE_DIVIDING_LINE)?.[0]
 
-    // const issueUser = isIssueComment ? comment?.user?.login : issue?.user?.login
     const botNote =
       core.getInput('CUSTOM_BOT_NOTE')?.trim() || DEFAULT_BOT_MESSAGE
 
@@ -72,18 +70,6 @@ async function run(): Promise<void> {
     }
     const octokit = github.getOctokit(botToken)
 
-    // let botLoginName = core.getInput('BOT_LOGIN_NAME')
-    // if (!botLoginName) {
-    //   const botInfo = await octokit.request('GET /user')
-    //   botLoginName = botInfo.data.login
-    // }
-
-    // if (botLoginName === issueUser) {
-    //   return core.info(
-    //     `The issue comment user is bot ${botLoginName} himself, ignore return.`
-    //   )
-    // }
-
     core.info(`translate origin body is: ${translateOrigin}`)
 
     // translate issue comment body to english
@@ -118,11 +104,8 @@ async function run(): Promise<void> {
       if (needCommitComment) {
         // eslint-disable-next-line no-shadow
         const comment = `${originComment}
-
 ${TRANSLATE_DIVIDING_LINE}
-
 ---
-
 ${translateComment}
 `
         await updateIssue({
