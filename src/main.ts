@@ -48,7 +48,7 @@ async function run(): Promise<void> {
 
     let needCommitComment =
       originComment &&
-      originComment === 'null' &&
+      originComment !== 'null' &&
       !detectIsEnglish(originComment)
 
     let needCommitTitle =
