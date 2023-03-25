@@ -15,14 +15,14 @@ export async function createIssueComment({
   octokit
 }: CreateIssueCommentParameters): Promise<void> {
   const {owner, repo} = github.context.repo
-  if (discussion_number) {
-    await octokit.discussion.createComment({
-      owner,
-      repo,
-      discussion_number,
-      body
-    })
-  }
+  // if (discussion_number) {
+  //   await octokit.discussion.createComment({
+  //     owner,
+  //     repo,
+  //     discussion_number,
+  //     body
+  //   })
+  // }
 
   if (issue_number) {
     await octokit.issues.createComment({

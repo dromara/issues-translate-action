@@ -19,19 +19,19 @@ export async function updateIssue({
   octokit
 }: UpdateIssueParameters): Promise<void> {
   const {owner, repo} = github.context.repo
-  if (discussion_number) {
-    if (comment_id && body) {
-      await octokit.discussion.updateComment({owner, repo, comment_id, body})
-    } else if (title || body) {
-      await octokit.discussion.update({
-        owner,
-        repo,
-        discussion_number,
-        title,
-        body
-      })
-    }
-  }
+  // if (discussion_number) {
+  //   if (comment_id && body) {
+  //     await octokit.teams.updateDiscussionCommentInOrg({
+  //       org: owner, 
+  //       team_slug: repo,
+  //       discussion_number, 
+  //       comment_number: comment_id, 
+  //       body
+  //     })
+  //   } else if (title || body) {
+  //     await octokit.teams.updateDiscussionInOrg({org:owner, team_slug:repo, discussion_number, body})
+  //   }
+  // }
 
   if (issue_number) {
     if (comment_id && body) {

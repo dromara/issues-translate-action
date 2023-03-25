@@ -4,10 +4,10 @@ on:
     types: [opened, edited]
   issue_comment:
     types: [created, edited]
-  discussion: 
-    types: [created, edited]
-  discussion_comment:
-    types: [created, edited]
+  # discussion: 
+  #   types: [created, edited]
+  # discussion_comment:
+  #   types: [created, edited]
 
 jobs:
   test: # make sure the action works on a clean machine without building
@@ -23,5 +23,3 @@ jobs:
         with:
           IS_MODIFY_TITLE: true
           APPEND_TRANSLATION: true
-          CUSTOM_BOT_NOTE: Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿
-
