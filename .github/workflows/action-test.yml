@@ -7,12 +7,12 @@ on:
 
 jobs:
   test: # make sure the action works on a clean machine without building
+    permissions:
+      issues: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ./
-        permissions:
-          issues: write
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
