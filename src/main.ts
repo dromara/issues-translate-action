@@ -90,17 +90,17 @@ async function run(): Promise<void> {
     }
     const octokit = github.getOctokit(botToken)
 
-    let botLoginName = core.getInput('BOT_LOGIN_NAME')
-    if (!botLoginName) {
-      const botInfo = await octokit.request('GET /user')
-      botLoginName = botInfo.data.login
-    }
+    // let botLoginName = core.getInput('BOT_LOGIN_NAME')
+    // if (!botLoginName) {
+    //   const botInfo = await octokit.request('GET /user')
+    //   botLoginName = botInfo.data.login
+    // }
 
-    if (botLoginName === issueUser) {
-      return core.info(
-        `The issue comment user is bot ${botLoginName} himself, ignore return.`
-      )
-    }
+    // if (botLoginName === issueUser) {
+    //   return core.info(
+    //     `The issue comment user is bot ${botLoginName} himself, ignore return.`
+    //   )
+    // }
 
     core.info(`translate origin body is: ${translateOrigin}`)
 
