@@ -39,7 +39,7 @@ async function run(): Promise<void> {
       originComment && originComment !== 'null' && !isEnglish(originComment)
 
     let needCommitTitle =
-      ['issue', 'discussion'].includes(eventName) &&
+      ['issues', 'discussion'].includes(eventName) &&
       originTitle &&
       originTitle !== 'null' &&
       !isEnglish(originTitle)
