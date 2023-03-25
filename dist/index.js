@@ -4700,6 +4700,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { context: { eventName, payload: { issue, comment } } } = github;
+            core.info(JSON.stringify(github.context));
             const isIssueComment = eventName === 'issue_comment';
             const isModifyTitle = core.getInput('IS_MODIFY_TITLE');
             const shouldAppendContent = core.getInput('APPEND_TRANSLATION');
