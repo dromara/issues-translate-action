@@ -4617,14 +4617,8 @@ function run() {
     var _a, _b, _c, _d, _e, _f, _g;
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { context: { eventName, payload: { issue, comment, action } } } = github;
-            const isIssue = eventName === 'issue';
+            const { context: { eventName, payload: { issue, comment } } } = github;
             const isIssueComment = eventName === 'issue_comment';
-            const isIssueCreated = isIssueComment && action === 'created';
-            const isIssueOpened = isIssue && action === 'opened';
-            if (!isIssueCreated && !isIssueOpened) {
-                return core.info(`The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`);
-            }
             const isModifyTitle = core.getInput('IS_MODIFY_TITLE');
             const shouldAppendContent = core.getInput('APPEND_TRANSLATION');
             const issueNumber = issue === null || issue === void 0 ? void 0 : issue.number;
@@ -4636,18 +4630,12 @@ function run() {
                 return;
             }
             let needCommitComment = originComment && originComment !== 'null' && !utils_1.isEnglish(originComment);
-            let needCommitTitle = isIssueOpened &&
-                originTitle &&
-                originTitle !== 'null' &&
-                !utils_1.isEnglish(originTitle);
+            let needCommitTitle = originTitle && originTitle !== 'null' && !utils_1.isEnglish(originTitle);
             let translateOrigin = null;
             if (originComment && originComment !== 'null' && !needCommitComment) {
                 core.info('Detect the issue comment body is english already, ignore.');
             }
-            if (isIssueOpened &&
-                originTitle &&
-                originTitle !== null &&
-                !needCommitTitle) {
+            if (originTitle && originTitle !== null && !needCommitTitle) {
                 core.info('Detect the issue title body is english already, ignore.');
             }
             if (!needCommitTitle && !needCommitComment) {
