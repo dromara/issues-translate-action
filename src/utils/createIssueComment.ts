@@ -2,26 +2,38 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 
 interface CreateIssueCommentParameters {
-  issue_number: number
+  discussion_number?: number
+  issue_number?: number
   body: string
   octokit: ReturnType<typeof github.getOctokit>
 }
 
 export async function createIssueComment({
+  discussion_number,
   issue_number,
   body,
   octokit
 }: CreateIssueCommentParameters): Promise<void> {
   const {owner, repo} = github.context.repo
-  await octokit.request. .issues.createComment({
-    owner,
-    repo,
-    issue_number,
-    body
-  })
+  if (discussion_number) {
+    await octokit.discussion.createComment({
+      owner,
+      repo,
+      discussion_number,
+      body
+    })
+  }
 
-  const issue_url = github.context.payload.issue?.html_url
-  core.info(
-    `complete to push translate issue comment: ${body} in ${issue_url} `
-  )
+  if (issue_number) {
+    await octokit.issues.createComment({
+      owner,
+      repo,
+      issue_number,
+      body
+    })
+  }
+
+  const type = discussion_number ? 'discussion' : 'issue'
+  const url = github.context.payload[type]?.html_url
+  core.info(`complete to push translate ${type} comment: ${body} in ${url} `)
 }

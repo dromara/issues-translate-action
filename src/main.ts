@@ -16,6 +16,8 @@ async function run(): Promise<void> {
       }
     } = github
 
+    const isIssue = eventName.startsWith('issue')
+    const isDiscussion = eventName.startsWith('discussion')
     core.info(JSON.stringify(github.context))
 
     const isModifyTitle = core.getInput('IS_MODIFY_TITLE')
@@ -29,7 +31,7 @@ async function run(): Promise<void> {
     const botNote =
       core.getInput('CUSTOM_BOT_NOTE')?.trim() || DEFAULT_BOT_MESSAGE
 
-    if (!issue?.number) {
+    if ((isIssue && !issue?.number) || (isDiscussion && !discussion?.number)) {
       return
     }
 
@@ -95,7 +97,8 @@ async function run(): Promise<void> {
       if (needCommitTitle && translateTitle) {
         const title = [originTitle, translateTitle].join(TRANSLATE_TITLE_DIVING)
         await updateIssue({
-          issue_number: issue.number,
+          discussion_number: discussion?.number,
+          issue_number: issue?.number,
           title,
           octokit
         })
@@ -109,7 +112,8 @@ ${TRANSLATE_DIVIDING_LINE}
 ${translateComment}
 `
         await updateIssue({
-          issue_number: issue.number,
+          discussion_number: discussion?.number,
+          issue_number: issue?.number,
           comment_id: github.context.payload.comment?.id,
           body: comment,
           octokit
@@ -128,7 +132,8 @@ ${
 ${translateComment}`
       if (isModifyTitle === 'true' && translateTitle && needCommitTitle) {
         await updateIssue({
-          issue_number: issue.number,
+          discussion_number: discussion?.number,
+          issue_number: issue?.number,
           title: translateTitle,
           octokit
         })
@@ -136,7 +141,8 @@ ${translateComment}`
 
       if (needCommitComment && translateComment) {
         await createIssueComment({
-          issue_number: issue.number,
+          discussion_number: discussion?.number,
+          issue_number: issue?.number,
           body: translateComment,
           octokit
         })
