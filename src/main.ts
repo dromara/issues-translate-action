@@ -17,20 +17,11 @@ async function run(): Promise<void> {
     const {
       context: {
         eventName,
-        payload: {issue, comment, action}
+        payload: {issue, comment}
       }
     } = github
 
-    const isIssue = eventName === 'issue'
     const isIssueComment = eventName === 'issue_comment'
-    const isIssueCreated = isIssueComment && action === 'created'
-    const isIssueOpened = isIssue && action === 'opened'
-
-    if (!isIssueCreated && !isIssueOpened) {
-      return core.info(
-        `The status of the action must be created on issue_comment, no applicable - ${github.context.payload.action} on ${github.context.eventName}, return`
-      )
-    }
 
     const isModifyTitle = core.getInput('IS_MODIFY_TITLE')
     const shouldAppendContent = core.getInput('APPEND_TRANSLATION')
@@ -51,22 +42,14 @@ async function run(): Promise<void> {
       originComment && originComment !== 'null' && !isEnglish(originComment)
 
     let needCommitTitle =
-      isIssueOpened &&
-      originTitle &&
-      originTitle !== 'null' &&
-      !isEnglish(originTitle)
+      originTitle && originTitle !== 'null' && !isEnglish(originTitle)
 
     let translateOrigin = null
 
     if (originComment && originComment !== 'null' && !needCommitComment) {
       core.info('Detect the issue comment body is english already, ignore.')
     }
-    if (
-      isIssueOpened &&
-      originTitle &&
-      originTitle !== null &&
-      !needCommitTitle
-    ) {
+    if (originTitle && originTitle !== null && !needCommitTitle) {
       core.info('Detect the issue title body is english already, ignore.')
     }
 
