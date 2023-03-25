@@ -4709,7 +4709,7 @@ function run() {
                 return;
             }
             let needCommitComment = originComment && originComment !== 'null' && !utils_1.isEnglish(originComment);
-            let needCommitTitle = ['issue', 'discussion'].includes(eventName) &&
+            let needCommitTitle = ['issues', 'discussion'].includes(eventName) &&
                 originTitle &&
                 originTitle !== 'null' &&
                 !utils_1.isEnglish(originTitle);
