@@ -5936,6 +5936,8 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { context: { eventName, payload: { issue, discussion, comment } } } = github;
+            const isIssue = eventName.startsWith('issue');
+            const isDiscussion = eventName.startsWith('discussion');
             core.info(JSON.stringify(github.context));
             const isModifyTitle = core.getInput('IS_MODIFY_TITLE');
             const shouldAppendContent = core.getInput('APPEND_TRANSLATION');
@@ -5944,7 +5946,7 @@ function run() {
                 ? comment === null || comment === void 0 ? void 0 : comment.body
                 : (discussion === null || discussion === void 0 ? void 0 : discussion.body) || (issue === null || issue === void 0 ? void 0 : issue.body))) === null || _c === void 0 ? void 0 : _c.split(TRANSLATE_DIVIDING_LINE)) === null || _d === void 0 ? void 0 : _d[0];
             const botNote = ((_e = core.getInput('CUSTOM_BOT_NOTE')) === null || _e === void 0 ? void 0 : _e.trim()) || DEFAULT_BOT_MESSAGE;
-            if (!(issue === null || issue === void 0 ? void 0 : issue.number)) {
+            if ((isIssue && !(issue === null || issue === void 0 ? void 0 : issue.number)) || (isDiscussion && !(discussion === null || discussion === void 0 ? void 0 : discussion.number))) {
                 return;
             }
             let needCommitComment = originComment && originComment !== 'null' && !(0, utils_1.isEnglish)(originComment);
@@ -5997,7 +5999,8 @@ function run() {
                 if (needCommitTitle && translateTitle) {
                     const title = [originTitle, translateTitle].join(TRANSLATE_TITLE_DIVING);
                     yield (0, utils_1.updateIssue)({
-                        issue_number: issue.number,
+                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.number,
+                        issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
                         title,
                         octokit
                     });
@@ -6010,7 +6013,8 @@ ${TRANSLATE_DIVIDING_LINE}
 ${translateComment}
 `;
                     yield (0, utils_1.updateIssue)({
-                        issue_number: issue.number,
+                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.number,
+                        issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
                         comment_id: (_g = github.context.payload.comment) === null || _g === void 0 ? void 0 : _g.id,
                         body: comment,
                         octokit
@@ -6028,14 +6032,16 @@ ${isModifyTitle === 'false' && needCommitComment
 ${translateComment}`;
                 if (isModifyTitle === 'true' && translateTitle && needCommitTitle) {
                     yield (0, utils_1.updateIssue)({
-                        issue_number: issue.number,
+                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.number,
+                        issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
                         title: translateTitle,
                         octokit
                     });
                 }
                 if (needCommitComment && translateComment) {
                     yield (0, utils_1.createIssueComment)({
-                        issue_number: issue.number,
+                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.number,
+                        issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
                         body: translateComment,
                         octokit
                     });
@@ -8007,22 +8013,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateIssue = void 0;
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
-function updateIssue({ issue_number, comment_id, title, body, octokit }) {
+function updateIssue({ discussion_number, issue_number, comment_id, title, body, octokit }) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const { owner, repo } = github.context.repo;
-        if (comment_id && body) {
-            yield octokit.issues.updateComment({ owner, repo, comment_id, body });
+        if (discussion_number) {
+            if (comment_id && body) {
+                yield octokit.discussion.updateComment({ owner, repo, comment_id, body });
+            }
+            else if (title || body) {
+                yield octokit.discussion.update({
+                    owner,
+                    repo,
+                    discussion_number,
+                    title,
+                    body
+                });
+            }
         }
-        else if (issue_number && (title || body)) {
-            yield octokit.issues.update({ owner, repo, issue_number, title, body });
+        if (issue_number) {
+            if (comment_id && body) {
+                yield octokit.issues.updateComment({ owner, repo, comment_id, body });
+            }
+            else if (title || body) {
+                yield octokit.issues.update({ owner, repo, issue_number, title, body });
+            }
         }
-        const issue_url = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.html_url;
+        const type = discussion_number ? 'discussion' : 'issue';
+        const url = (_a = github.context.payload[type]) === null || _a === void 0 ? void 0 : _a.html_url;
         if (title) {
-            core.info(`complete to modify translate issue title: ${title} in ${issue_url} `);
+            core.info(`complete to modify translate ${type} title: ${title} in ${url} `);
         }
         if (body) {
-            core.info(`complete to modify translate issue body: ${body} in ${issue_url} `);
+            core.info(`complete to modify translate ${type} body: ${body} in ${url} `);
         }
     });
 }
@@ -16555,18 +16578,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createIssueComment = void 0;
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
-function createIssueComment({ issue_number, body, octokit }) {
+function createIssueComment({ discussion_number, issue_number, body, octokit }) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const { owner, repo } = github.context.repo;
-        yield octokit.issues.createComment({
-            owner,
-            repo,
-            issue_number,
-            body
-        });
-        const issue_url = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.html_url;
-        core.info(`complete to push translate issue comment: ${body} in ${issue_url} `);
+        if (discussion_number) {
+            yield octokit.discussion.createComment({
+                owner,
+                repo,
+                discussion_number,
+                body
+            });
+        }
+        if (issue_number) {
+            yield octokit.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body
+            });
+        }
+        const type = discussion_number ? 'discussion' : 'issue';
+        const url = (_a = github.context.payload[type]) === null || _a === void 0 ? void 0 : _a.html_url;
+        core.info(`complete to push translate ${type} comment: ${body} in ${url} `);
     });
 }
 exports.createIssueComment = createIssueComment;
