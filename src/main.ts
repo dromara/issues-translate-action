@@ -19,6 +19,8 @@ async function run(): Promise<void> {
       }
     } = github
 
+    core.info(JSON.stringify(github.context))
+
     const isIssueComment = eventName === 'issue_comment'
 
     const isModifyTitle = core.getInput('IS_MODIFY_TITLE')
