@@ -4672,14 +4672,16 @@ function run() {
                 return core.info(`GITHUB_TOKEN is requried!`);
             }
             const octokit = github.getOctokit(botToken);
-            let botLoginName = core.getInput('BOT_LOGIN_NAME');
-            if (!botLoginName) {
-                const botInfo = yield octokit.request('GET /user');
-                botLoginName = botInfo.data.login;
-            }
-            if (botLoginName === issueUser) {
-                return core.info(`The issue comment user is bot ${botLoginName} himself, ignore return.`);
-            }
+            // let botLoginName = core.getInput('BOT_LOGIN_NAME')
+            // if (!botLoginName) {
+            //   const botInfo = await octokit.request('GET /user')
+            //   botLoginName = botInfo.data.login
+            // }
+            // if (botLoginName === issueUser) {
+            //   return core.info(
+            //     `The issue comment user is bot ${botLoginName} himself, ignore return.`
+            //   )
+            // }
             core.info(`translate origin body is: ${translateOrigin}`);
             // translate issue comment body to english
             const translateTmp = yield translateIssueOrigin(translateOrigin);
