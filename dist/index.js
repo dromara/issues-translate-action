@@ -4638,7 +4638,7 @@ function run() {
                 return;
             }
             let needCommitComment = originComment &&
-                originComment === 'null' &&
+                originComment !== 'null' &&
                 !detectIsEnglish(originComment);
             let needCommitTitle = isIssueOpened &&
                 originTitle &&
