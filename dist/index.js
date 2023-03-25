@@ -4638,12 +4638,12 @@ function run() {
                 return;
             }
             let needCommitComment = originComment &&
-                originComment !== 'null' &&
-                detectIsEnglish(originComment);
+                originComment === 'null' &&
+                !detectIsEnglish(originComment);
             let needCommitTitle = isIssueOpened &&
                 originTitle &&
                 originTitle !== 'null' &&
-                detectIsEnglish(originTitle);
+                !detectIsEnglish(originTitle);
             let translateOrigin = null;
             if (originComment && originComment !== 'null' && !needCommitComment) {
                 core.info('Detect the issue comment body is english already, ignore.');
