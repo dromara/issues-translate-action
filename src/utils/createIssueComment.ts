@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import { createDiscussionComment } from './createDiscussionComment'
 
 interface CreateIssueCommentParameters {
   discussion_number?: number
@@ -15,14 +16,13 @@ export async function createIssueComment({
   octokit
 }: CreateIssueCommentParameters): Promise<void> {
   const {owner, repo} = github.context.repo
-  // if (discussion_number) {
-  //   await octokit.discussion.createComment({
-  //     owner,
-  //     repo,
-  //     discussion_number,
-  //     body
-  //   })
-  // }
+  if (discussion_number) {
+    return createDiscussionComment({
+      discussion_number,
+      body,
+      octokit
+    });
+  }
 
   if (issue_number) {
     await octokit.issues.createComment({
@@ -33,7 +33,6 @@ export async function createIssueComment({
     })
   }
 
-  const type = discussion_number ? 'discussion' : 'issue'
-  const url = github.context.payload[type]?.html_url
-  core.info(`complete to push translate ${type} comment: ${body} in ${url} `)
+  const url = github.context.payload?.issue?.html_url
+  core.info(`complete to push translate issue comment: ${body} in ${url} `)
 }
