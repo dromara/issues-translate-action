@@ -5950,7 +5950,7 @@ function run() {
                 ? comment === null || comment === void 0 ? void 0 : comment.body
                 : (discussion === null || discussion === void 0 ? void 0 : discussion.body) || (issue === null || issue === void 0 ? void 0 : issue.body))) === null || _c === void 0 ? void 0 : _c.split(TRANSLATE_DIVIDING_LINE)) === null || _d === void 0 ? void 0 : _d[0];
             const botNote = ((_e = core.getInput('CUSTOM_BOT_NOTE')) === null || _e === void 0 ? void 0 : _e.trim()) || DEFAULT_BOT_MESSAGE;
-            if ((isIssue && !(issue === null || issue === void 0 ? void 0 : issue.number)) || (isDiscussion && !(discussion === null || discussion === void 0 ? void 0 : discussion.number))) {
+            if ((isIssue && !(issue === null || issue === void 0 ? void 0 : issue.number)) || (isDiscussion && !(discussion === null || discussion === void 0 ? void 0 : discussion.node_id))) {
                 return;
             }
             let needCommitComment = originComment && originComment !== 'null' && !(0, utils_1.isEnglish)(originComment);
@@ -6003,7 +6003,7 @@ function run() {
                 if (needCommitTitle && translateTitle) {
                     const title = [originTitle, translateTitle].join(TRANSLATE_TITLE_DIVING);
                     yield (0, utils_1.updateIssue)({
-                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.number,
+                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.node_id,
                         issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
                         title,
                         octokit
@@ -6017,7 +6017,7 @@ ${TRANSLATE_DIVIDING_LINE}
 ${translateComment}
 `;
                     yield (0, utils_1.updateIssue)({
-                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.number,
+                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.node_id,
                         issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
                         comment_id: (_g = github.context.payload.comment) === null || _g === void 0 ? void 0 : _g.id,
                         body: comment,
@@ -6036,7 +6036,7 @@ ${isModifyTitle === 'false' && needCommitComment
 ${translateComment}`;
                 if (isModifyTitle === 'true' && translateTitle && needCommitTitle) {
                     yield (0, utils_1.updateIssue)({
-                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.number,
+                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.node_id,
                         issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
                         title: translateTitle,
                         octokit
@@ -6044,7 +6044,7 @@ ${translateComment}`;
                 }
                 if (needCommitComment && translateComment) {
                     yield (0, utils_1.createIssueComment)({
-                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.number,
+                        discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.node_id,
                         issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
                         body: translateComment,
                         octokit
