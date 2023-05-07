@@ -1,6 +1,8 @@
 ![](./assets/logo.svg)
 # GitHub Translate Action
 
+En | [中文](./README_CN.md)
+
 A GitHub Action to translate non-English GitHub issues and GitHub discussions into English automatically.
 
 ## Input variables

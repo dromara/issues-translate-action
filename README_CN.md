@@ -1,6 +1,8 @@
 ![](./assets/logo.svg)
 # GitHub Translate Action  
 
+[En](./README.md) | 中文
+
 将非英文的 GitHub issue 和 GitHub discussion 自动翻译成英文的 GitHub Action。
 
 ## 配置项
