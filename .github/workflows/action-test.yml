@@ -4,10 +4,10 @@ on:
     types: [opened, edited]
   issue_comment:
     types: [created, edited]
-  # discussion: 
-  #   types: [created, edited]
-  # discussion_comment:
-  #   types: [created, edited]
+  discussion: 
+    types: [created, edited]
+  discussion_comment:
+    types: [created, edited]
 
 jobs:
   test: # make sure the action works on a clean machine without building
