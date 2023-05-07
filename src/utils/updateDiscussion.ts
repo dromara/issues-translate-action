@@ -19,13 +19,13 @@ export async function updateDiscussion({
 }: UpdateDiscussionParams) {
 
   const mutation = commentId ? `mutation($commentId: ID!, $body: String!) {
-    updateDiscusstionComment(input: {commentId: $commentId, body: $body}) {
+    updateDiscussionComment(input: {commentId: $commentId, body: $body}) {
       discussionComment {
         body
       }
     }
   }` : `mutation($discussionId: ID!, $body: String!, $title: String!, ) {
-    updateDiscusstion(input: {discusstionId: $discusstionId, title: $title, body: $body}) {
+    updateDiscussion(input: {discussionId: $discussionId, title: $title, body: $body}) {
       discussion {
         title
         body
