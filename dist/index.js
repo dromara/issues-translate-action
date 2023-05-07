@@ -13619,13 +13619,13 @@ function updateDiscussion({ discussion_number: discussionId, comment_id: comment
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const mutation = commentId ? `mutation($commentId: ID!, $body: String!) {
-    updateDiscusstionComment(input: {commentId: $commentId, body: $body}) {
+    updateDiscussionComment(input: {commentId: $commentId, body: $body}) {
       discussionComment {
         body
       }
     }
   }` : `mutation($discussionId: ID!, $body: String!, $title: String!, ) {
-    updateDiscusstion(input: {discusstionId: $discusstionId, title: $title, body: $body}) {
+    updateDiscussion(input: {discussionId: $discussionId, title: $title, body: $body}) {
       discussion {
         title
         body
