@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import { updateDiscussion } from './updateDiscussion'
 
 interface UpdateIssueParameters {
   discussion_number?: number
@@ -18,20 +19,17 @@ export async function updateIssue({
   body,
   octokit
 }: UpdateIssueParameters): Promise<void> {
+  if (discussion_number) {
+    return updateDiscussion({
+      discussion_number,
+      comment_id,
+      title,
+      body,
+      octokit,
+    });
+  }
+
   const {owner, repo} = github.context.repo
-  // if (discussion_number) {
-  //   if (comment_id && body) {
-  //     await octokit.teams.updateDiscussionCommentInOrg({
-  //       org: owner, 
-  //       team_slug: repo,
-  //       discussion_number, 
-  //       comment_number: comment_id, 
-  //       body
-  //     })
-  //   } else if (title || body) {
-  //     await octokit.teams.updateDiscussionInOrg({org:owner, team_slug:repo, discussion_number, body})
-  //   }
-  // }
 
   if (issue_number) {
     if (comment_id && body) {
@@ -41,13 +39,12 @@ export async function updateIssue({
     }
   }
 
-  const type = discussion_number ? 'discussion' : 'issue'
-  const url = github.context.payload[type]?.html_url
+  const url = github.context.payload.issue?.html_url
   if (title) {
-    core.info(`complete to modify translate ${type} title: ${title} in ${url} `)
+    core.info(`complete to modify translate issue title: ${title} in ${url} `)
   }
 
   if (body) {
-    core.info(`complete to modify translate ${type} body: ${body} in ${url} `)
+    core.info(`complete to modify translate issue body: ${body} in ${url} `)
   }
 }
