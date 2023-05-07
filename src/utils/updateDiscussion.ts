@@ -18,7 +18,7 @@ export async function updateDiscussion({
   octokit,
 }: UpdateDiscussionParams) {
 
-  const mutation = commentId ? `mutation($commentId: ID!, $body: String) {
+  const mutation = commentId ? `mutation($commentId: ID!, $body: String!) {
     updateDiscussionComment(input: {commentId: $commentId, body: $body}) {
       comment {
         body
