@@ -68,7 +68,7 @@ async function run(): Promise<void> {
     }
 
     // ignore when bot comment issue himself
-    const botToken = core.getInput('BOT_GITHUB_TOKEN') || DEFAULT_BOT_TOKEN
+    const botToken = DEFAULT_BOT_TOKEN
     if (!botToken) {
       return core.info(`GITHUB_TOKEN is requried!`)
     }

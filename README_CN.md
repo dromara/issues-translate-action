@@ -1,98 +1,54 @@
-# Issues Translate Action  
+![](./assets/logo.svg)
+# GitHub Translate Action  
 
-将非英文issue实时翻译成英文issue的action。     
+将非英文的 GitHub issue 和 GitHub discussion 自动翻译成英文的 GitHub Action。
 
+## 配置项
 
-## 快速使用    
+查看 [action.yml](./action.yml) 了解更多详细信息。
 
-> 使用默认的机器人账户 @Issues-translate-bot  
+- `IS_MODIFY_TITLE`: 是否翻译标题，默认为否。默认是直接修改标题，在 `APPEND_TRANSLATION` 为真的情况下会在原始标题后追加翻译结果。
+- `APPEND_TRANSLATION`: 是否追加翻译内容，默认为否。该 Action 默认会将翻译内容以新回复的形式追加到 issue/discussion 中。当该项为真时，则是修改原始内容追加翻译结果，这样不产生通知不打扰用户。
+- `CUSTOM_BOT_NOTE`: 在 `APPEND_TRANSLATION` 为假时，翻译内容会增加一段机器翻译描述标记，你可以自定义这段描述内容。
 
-#### 创建一个github action     
-> 在仓库的 .github/workflows/ 下创建 issue-translator.yml 如下:   
+## 使用示例
 
-````
-name: 'issue-translator'
-on: 
-  issue_comment: 
-    types: [created]
-  issues: 
-    types: [opened]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: usthe/issues-translate-action@v2.7
-        with:
-          IS_MODIFY_TITLE: false
-          # 非必须，决定是否需要修改issue标题内容   
-          # 若是true，则机器人账户@Issues-translate-bot必须拥有修改此仓库issue权限。可以通过邀请@Issues-translate-bot加入仓库协作者实现。
-          CUSTOM_BOT_NOTE: Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿
-          # 非必须，自定义机器人翻译的前缀开始内容。  
-````
-
-
-## 高级自定义       
-
-> 通过配置BOT_GITHUB_TOKEN使用自定义的机器人账户   
-> 
-
-1. 创建一个github账户作为您的机器人账户   
-
-2. 使用此账户生成对应的token作为BOT_GITHUB_TOKEN      
-
-3. 将BOT_GITHUB_TOKEN = ${token} 作为Secrets BOT_GITHUB_TOKEN = ${token} 配置到您的仓库中
-
-4. 创建一个下面的github action(在仓库的 .github/workflows/ 下创建 issue-translator.yml 如下)         
-
-````
-name: 'issue-translator'
-on: 
-  issue_comment: 
-    types: [created]
-  issues: 
-    types: [opened]
+````yml
+name: 'translator'
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  discussion: 
+    types: [created, edited]
+  discussion_comment:
+    types: [created, edited]
 
 jobs:
-  build:
+  translate:
+    permissions:
+      issues: write
+      discussions: write
     runs-on: ubuntu-latest
     steps:
-      - uses: usthe/issues-translate-action@v2.7
+      - uses: actions/checkout@v3
+      - uses: lizheming/github-translate-action
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
-          # 非必须，填写您的机器人github账户token
-          BOT_LOGIN_NAME: Issues-translate-bot    
-          # 非必须，建议不填写，机器人名称会根据token获取到，若填写，请一定与token对应的github账户名相同
+          IS_MODIFY_TITLE: true
+          APPEND_TRANSLATION: true
 ````
 
+## 鸣谢
 
-## 其它       
+本项目 Fork 自[dromara/issues-translate-action](https://github.com/dromara/issues-translate-action)，非常感谢原作者的工作。由于对原项目的改造比较巨大，包括但不限于：
 
-1. 如何邀请@Issues-translate-bot加入仓库协作者    
-Project -> Settings -> Manage access -> Invite a collaborator   
-在[issues-translate-action](https://github.com/tomsun28/issues-translate-action)创建一个issue告知，之后@Issues-translate-bot会加入您的仓库        
+- 增加 GitHub discussion 的翻译支持
+- 增加追加翻译内容无侵扰翻译动作
+- 使用 GitHub Action Token 替换自定义 Token 流程
+- 重构项目拆分代码
 
-## DEMO  
-
-![action-sample](dist/action-sample.png)   
-
-## Who Use the Action?
-
-1. [hertzbeat](https://github.com/dromara/hertzbeat) **Create By Us** - A real-time monitoring system with custom-monitor and agentless.
-2. [sureness](https://github.com/dromara/sureness) **Create By Us** - A simple and efficient security framework that focus on protection of API.
-3. [go-zero](https://github.com/zeromicro/go-zero) - A cloud-native Go microservices framework with cli tool for productivity.
-4. [dashy](https://github.com/Lissy93/dashy) - A self-hostable personal dashboard built for you.
-5. [wails](https://github.com/wailsapp/wails) - Create beautiful applications using Go
-6. [seata-go](https://github.com/seata/seata-go) - Go Implementation For Seata
-7. [rainbond](https://github.com/goodrain/rainbond) - Cloud native multi cloud application management platform
-8. [adempiere](https://github.com/adempiere/adempiere) - ADempiere Business Suite done the Bazaar way in an open and unabated fashion.
-9. [carbon](https://github.com/golang-module/carbon) - A simple, semantic and developer-friendly golang package for datetime
-10. [tabby](https://github.com/Eugeny/tabby) - A terminal for a more modern age
-11. [gorse](https://github.com/gorse-io/gorse) - An open source recommender system service written in Go
-
-**Have Fun!**  
-
-
-
-
+几乎相当于一个新的项目了，所以没有考虑将修改合并到上游而是作为独立项目使用。
 

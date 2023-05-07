@@ -1,20 +1,16 @@
-name: 'Issues and Discussion Translator'
-description: 'The action for translating Non-English issues content to English.'
+name: 'GitHub Translator'
+description: 'Translate non-English GitHub issues and GitHub discussions into English automatically.'
 branding:
-  icon: 'disc'
-  color: 'orange'
-author: 'tomsun28'
+  icon: 'repeat'
+  color: 'purple'
+author: 'lizheming'
 inputs:
-  BOT_GITHUB_TOKEN: 
-    description: 'The issue comment bot GITHUB_TOKEN.'
-  BOT_LOGIN_NAME:
-    description: 'The issue comment bot github login name.'
   IS_MODIFY_TITLE: 
     description: 'Is need modify issue title, true or false, default false.'
-  CUSTOM_BOT_NOTE:
-    description: 'Custom bot note message.'
   APPEND_TRANSLATION:
     description: 'append translation content into issue instead of create new translation issue.'
+  CUSTOM_BOT_NOTE:
+    description: 'Custom bot note message.'
 runs:
   using: 'node16'
   main: 'dist/index.js'
