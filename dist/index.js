@@ -6019,7 +6019,7 @@ ${translateComment}
                     yield (0, utils_1.updateIssue)({
                         discussion_number: discussion === null || discussion === void 0 ? void 0 : discussion.node_id,
                         issue_number: issue === null || issue === void 0 ? void 0 : issue.number,
-                        comment_id: (_g = github.context.payload.comment) === null || _g === void 0 ? void 0 : _g.id,
+                        comment_id: (_g = github.context.payload.comment) === null || _g === void 0 ? void 0 : _g[isDiscussion ? 'node_id' : 'id'],
                         body: comment,
                         octokit
                     });
@@ -10839,6 +10839,71 @@ class CacheableLookup {
 
 module.exports = CacheableLookup;
 module.exports.default = CacheableLookup;
+
+
+/***/ }),
+
+/***/ 378:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createDiscussionComment = void 0;
+const core = __importStar(__webpack_require__(186));
+const github = __importStar(__webpack_require__(438));
+function createDiscussionComment({ discussion_number: discussionId, body, octokit, }) {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        const mutation = `mutation($discussionId: ID!, $body: String) {
+    addDiscussionComment(input: {discussionId: $discussionId, body: $body}) {
+      comment {
+        body
+      }
+    }
+  }`;
+        yield octokit.graphql({
+            query: mutation,
+            discussionId,
+            body,
+        });
+        const url = (_b = (_a = github.context.payload) === null || _a === void 0 ? void 0 : _a.discussion) === null || _b === void 0 ? void 0 : _b.html_url;
+        core.info(`complete to push translate discussion comment: ${body} in ${url} `);
+    });
+}
+exports.createDiscussionComment = createDiscussionComment;
 
 
 /***/ }),
@@ -16592,18 +16657,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createIssueComment = void 0;
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
+const createDiscussionComment_1 = __webpack_require__(378);
 function createIssueComment({ discussion_number, issue_number, body, octokit }) {
-    var _a;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const { owner, repo } = github.context.repo;
-        // if (discussion_number) {
-        //   await octokit.discussion.createComment({
-        //     owner,
-        //     repo,
-        //     discussion_number,
-        //     body
-        //   })
-        // }
+        if (discussion_number) {
+            return (0, createDiscussionComment_1.createDiscussionComment)({
+                discussion_number,
+                body,
+                octokit
+            });
+        }
         if (issue_number) {
             yield octokit.issues.createComment({
                 owner,
@@ -16612,9 +16677,8 @@ function createIssueComment({ discussion_number, issue_number, body, octokit }) 
                 body
             });
         }
-        const type = discussion_number ? 'discussion' : 'issue';
-        const url = (_a = github.context.payload[type]) === null || _a === void 0 ? void 0 : _a.html_url;
-        core.info(`complete to push translate ${type} comment: ${body} in ${url} `);
+        const url = (_b = (_a = github.context.payload) === null || _a === void 0 ? void 0 : _a.issue) === null || _b === void 0 ? void 0 : _b.html_url;
+        core.info(`complete to push translate issue comment: ${body} in ${url} `);
     });
 }
 exports.createIssueComment = createIssueComment;

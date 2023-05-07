@@ -116,7 +116,8 @@ ${translateComment}
         await updateIssue({
           discussion_number: discussion?.node_id,
           issue_number: issue?.number,
-          comment_id: github.context.payload.comment?.[isDiscussion ? 'node_id' : 'id'],
+          comment_id:
+            github.context.payload.comment?.[isDiscussion ? 'node_id' : 'id'],
           body: comment,
           octokit
         })
