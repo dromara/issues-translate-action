@@ -43,7 +43,7 @@ jobs:
            APPEND_TRANSLATION: true
 ````
 
-## Acknowledgments
+## Thanks
 
 This project is forked from [dromara/issues-translate-action](https://github.com/dromara/issues-translate-action), thanks to the original author for his work. Due to the large modification of the upstream project, such as:
 
