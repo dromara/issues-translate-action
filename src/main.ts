@@ -22,7 +22,9 @@ async function run(): Promise<void> {
 
     const isModifyTitle = core.getInput('IS_MODIFY_TITLE')
     const shouldAppendContent = core.getInput('APPEND_TRANSLATION')
-    const originTitle = (discussion?.title || issue?.title)?.split(TRANSLATE_TITLE_DIVING)?.[0]
+    const originTitle = (discussion?.title || issue?.title)?.split(
+      TRANSLATE_TITLE_DIVING
+    )?.[0]
     const originComment = (eventName.endsWith('_comment')
       ? comment?.body
       : discussion?.body || issue?.body

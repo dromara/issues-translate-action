@@ -5945,7 +5945,7 @@ function run() {
             core.info(JSON.stringify(github.context));
             const isModifyTitle = core.getInput('IS_MODIFY_TITLE');
             const shouldAppendContent = core.getInput('APPEND_TRANSLATION');
-            const originTitle = (_b = (_a = issue === null || issue === void 0 ? void 0 : issue.title) === null || _a === void 0 ? void 0 : _a.split(TRANSLATE_TITLE_DIVING)) === null || _b === void 0 ? void 0 : _b[0];
+            const originTitle = (_b = (_a = ((discussion === null || discussion === void 0 ? void 0 : discussion.title) || (issue === null || issue === void 0 ? void 0 : issue.title))) === null || _a === void 0 ? void 0 : _a.split(TRANSLATE_TITLE_DIVING)) === null || _b === void 0 ? void 0 : _b[0];
             const originComment = (_d = (_c = (eventName.endsWith('_comment')
                 ? comment === null || comment === void 0 ? void 0 : comment.body
                 : (discussion === null || discussion === void 0 ? void 0 : discussion.body) || (issue === null || issue === void 0 ? void 0 : issue.body))) === null || _c === void 0 ? void 0 : _c.split(TRANSLATE_DIVIDING_LINE)) === null || _d === void 0 ? void 0 : _d[0];
@@ -13618,13 +13618,13 @@ const github = __importStar(__webpack_require__(438));
 function updateDiscussion({ discussion_number: discussionId, comment_id: commentId, body, title, octokit, }) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        const mutation = commentId ? `mutation($commentId: ID!, $body: String!) {
+        const mutation = commentId ? `mutation($commentId: ID!, $body: String) {
     updateDiscussionComment(input: {commentId: $commentId, body: $body}) {
       comment {
         body
       }
     }
-  }` : `mutation($discussionId: ID!, $body: String!, $title: String!, ) {
+  }` : `mutation($discussionId: ID!, $body: String, $title: String, ) {
     updateDiscussion(input: {discussionId: $discussionId, title: $title, body: $body}) {
       discussion {
         title
