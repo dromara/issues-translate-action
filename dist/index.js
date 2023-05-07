@@ -13683,7 +13683,7 @@ const github = __importStar(__webpack_require__(438));
 function updateDiscussion({ discussion_number: discussionId, comment_id: commentId, body, title, octokit, }) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        const mutation = commentId ? `mutation($commentId: ID!, $body: String) {
+        const mutation = commentId ? `mutation($commentId: ID!, $body: String!) {
     updateDiscussionComment(input: {commentId: $commentId, body: $body}) {
       comment {
         body
