@@ -13620,7 +13620,7 @@ function updateDiscussion({ discussion_number: discussionId, comment_id: comment
     return __awaiter(this, void 0, void 0, function* () {
         const mutation = commentId ? `mutation($commentId: ID!, $body: String!) {
     updateDiscussionComment(input: {commentId: $commentId, body: $body}) {
-      discussionComment {
+      comment {
         body
       }
     }
