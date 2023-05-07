@@ -20,7 +20,7 @@ export async function updateDiscussion({
 
   const mutation = commentId ? `mutation($commentId: ID!, $body: String!) {
     updateDiscussionComment(input: {commentId: $commentId, body: $body}) {
-      discussionComment {
+      comment {
         body
       }
     }
