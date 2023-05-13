@@ -8,6 +8,15 @@ on:
     types: [created, edited]
   discussion_comment:
     types: [created, edited]
+  pull_request:
+    types: [opened, edited]
+  # pull_request_comment:
+
+  # pull_request_review:
+  #   types: [submitted, edited]
+  # pull_request_review_comment:
+  #   types: [created, edited]
+
 
 jobs:
   test: # make sure the action works on a clean machine without building
