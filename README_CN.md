@@ -26,6 +26,8 @@ on:
     types: [created, edited]
   discussion_comment:
     types: [created, edited]
+  pull_request:
+    types: [opened, edited]
 
 jobs:
   translate:
