@@ -20,8 +20,8 @@ test('wait 500 ms', async () => {
 test('test runs', () => {
   process.env['INPUT_MILLISECONDS'] = '500'
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecSyncOptions = {
+  const options: cp.ExecFileSyncOptions = {
     env: process.env
   }
-  console.log(cp.execSync(`node ${ip}`, options).toString())
+  console.log(cp.execFileSync(process.execPath, [ip], options).toString())
 })
