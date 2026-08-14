@@ -1,4 +1,4 @@
-import {detectIsEnglish} from '../src/main'
+import {detectIsEnglish} from '../src/detect'
 
 describe('detectIsEnglish', () => {
   test('detects mixed-language issue bodies as non-English', () => {
