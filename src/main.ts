@@ -1,8 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as webhook from '@octokit/webhooks'
-import translate from '@tomsun28/google-translate-api'
-const franc = require('franc-min')
 
 async function run(): Promise<void> {
   try {
@@ -53,11 +51,11 @@ async function run(): Promise<void> {
     }
 
     // detect issue title comment body is english
-    if (originComment !== null && detectIsEnglish(originComment)) {
+        if (originComment !== null && await detectIsEnglish(originComment)) {
       needCommitComment = false
       core.info('Detect the issue comment body is english already, ignore.')
     }
-    if (originTitle !== null && detectIsEnglish(originTitle)) {
+        if (originTitle !== null && await detectIsEnglish(originTitle)) {
       needCommitTitle = false
       core.info('Detect the issue title body is english already, ignore.')
     }
@@ -191,36 +189,39 @@ ${translateComment}
   }
 }
 
-function detectIsEnglish(body: string | null): boolean | true {
-  if (body === null) {
-    return true
-  }
-  const detectResult = franc(body)
-  if (
-    detectResult === 'und' ||
-    detectResult === undefined ||
-    detectResult === null
-  ) {
-    core.warning(`Can not detect the undetermined comment body: ${body}`)
+async function detectIsEnglish(body: string | null): Promise<boolean> {
+  if (body === null) return true
+  try {
+    const francMod: any = await import('franc-min')
+    const francFn = (francMod && (francMod.default || francMod)) as any
+    const detectResult = francFn(body)
+    if (!detectResult || detectResult === 'und') {
+      core.warning(`Can not detect the undetermined comment body: ${body}`)
+      return false
+    }
+    core.info(`Detect comment body language result is: ${detectResult}`)
+    return detectResult === 'eng'
+  } catch (e: any) {
+    core.error(`Language detection failed: ${e?.message ?? e}`)
+    // Fall back to treating as non-English to avoid unnecessary work
     return false
   }
-  core.info(`Detect comment body language result is: ${detectResult}`)
-  return detectResult === 'eng'
 }
 
 async function translateIssueOrigin(body: string): Promise<string> {
-  let result = ''
-  await translate(body, {to: 'en'})
-    .then(res => {
-      if (res.text !== body) {
-        result = res.text
-      }
-    })
-    .catch(err => {
-      core.error(err)
-      core.setFailed(err.message)
-    })
-  return result
+  try {
+    const translateMod: any = await import('@tomsun28/google-translate-api')
+    const translateFn = (translateMod && (translateMod.default || translateMod)) as any
+    const res = await translateFn(body, {to: 'en'})
+    if (res && res.text && res.text !== body) {
+      return res.text
+    }
+    return ''
+  } catch (err: any) {
+    core.error(err)
+    core.setFailed(err?.message ?? String(err))
+    return ''
+  }
 }
 
 async function createComment(
