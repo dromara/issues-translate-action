@@ -4,6 +4,18 @@ import * as webhook from '@octokit/webhooks'
 import translate from '@tomsun28/google-translate-api'
 const franc = require('franc-min')
 
+export const DEFAULT_BOT_NOTE =
+  "Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿"
+
+export function normalizeBotNote(value: string | null | undefined): string {
+  const normalizedValue = (value ?? '')
+    .replace(/\r?\n/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return normalizedValue.length > 0 ? normalizedValue : DEFAULT_BOT_NOTE
+}
+
 async function run(): Promise<void> {
   try {
     if (
@@ -21,8 +33,7 @@ async function run(): Promise<void> {
     let originComment = null
     let originTitle = null
     let issueUser = null
-    let botNote =
-      "Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿"
+    let botNote = DEFAULT_BOT_NOTE
     const isModifyTitle = core.getInput('IS_MODIFY_TITLE')
     let translateOrigin = null
     let needCommitComment = true
@@ -87,9 +98,7 @@ async function run(): Promise<void> {
 
     // support custom bot note message
     const customBotMessage = core.getInput('CUSTOM_BOT_NOTE')
-    if (customBotMessage !== null && customBotMessage.trim() !== '') {
-      botNote = customBotMessage
-    }
+    botNote = normalizeBotNote(customBotMessage)
 
     let octokit = null
     if (
@@ -191,7 +200,7 @@ ${translateComment}
   }
 }
 
-function detectIsEnglish(body: string | null): boolean | true {
+export function detectIsEnglish(body: string | null): boolean | true {
   if (body === null) {
     return true
   }
@@ -259,4 +268,6 @@ async function modifyTitle(
   )
 }
 
-run()
+if (require.main === module) {
+  run()
+}
