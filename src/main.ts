@@ -4,7 +4,7 @@ import * as webhook from '@octokit/webhooks'
 import translate from '@tomsun28/google-translate-api'
 const franc = require('franc-min')
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     if (
       (github.context.eventName !== 'issue_comment' ||
@@ -77,12 +77,13 @@ async function run(): Promise<void> {
     let botToken = core.getInput('BOT_GITHUB_TOKEN')
     let botLoginName = core.getInput('BOT_LOGIN_NAME')
     if (botToken === null || botToken === undefined || botToken === '') {
-      // use the default github bot token
-      const defaultBotTokenBase64 =
-        'Y2I4M2EyNjE0NThlMzIwMjA3MGJhODRlY2I5NTM0ZjBmYTEwM2ZlNg=='
-      const defaultBotLoginName = 'Issues-translate-bot'
-      botToken = Buffer.from(defaultBotTokenBase64, 'base64').toString()
-      botLoginName = defaultBotLoginName
+      botToken = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || ''
+    }
+    if (botToken === null || botToken === undefined || botToken === '') {
+      core.warning(
+        'No BOT_GITHUB_TOKEN or GITHUB_TOKEN is configured. The action cannot authenticate to GitHub and will stop.'
+      )
+      return
     }
 
     // support custom bot note message
@@ -191,11 +192,26 @@ ${translateComment}
   }
 }
 
-function detectIsEnglish(body: string | null): boolean | true {
+export function detectIsEnglish(body: string | null): boolean {
   if (body === null) {
     return true
   }
-  const detectResult = franc(body)
+
+  const normalized = body.trim()
+  if (normalized === '') {
+    return true
+  }
+
+  if (
+    /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af\u0600-\u06ff\u0750-\u077f\u4e00-\u9fff\u3040-\u30ff\u0e00-\u0e7f\u0900-\u097f\u0980-\u09ff\u0a00-\u0a7f\u0b00-\u0b7f\u0c00-\u0c7f\u0d00-\u0d7f\u0f00-\u0fff\u1100-\u11ff\u3130-\u318f\u0370-\u03ff\u0400-\u04ff\u0500-\u052f]/u.test(
+      normalized
+    )
+  ) {
+    core.info(`Detect comment body includes non-Latin script, treat as non-English.`)
+    return false
+  }
+
+  const detectResult = franc(normalized)
   if (
     detectResult === 'und' ||
     detectResult === undefined ||
@@ -208,7 +224,7 @@ function detectIsEnglish(body: string | null): boolean | true {
   return detectResult === 'eng'
 }
 
-async function translateIssueOrigin(body: string): Promise<string> {
+export async function translateIssueOrigin(body: string): Promise<string> {
   let result = ''
   await translate(body, {to: 'en'})
     .then(res => {
@@ -259,4 +275,6 @@ async function modifyTitle(
   )
 }
 
-run()
+if (require.main === module) {
+  run()
+}
