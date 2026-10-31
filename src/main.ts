@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as webhook from '@octokit/webhooks'
 import translate from '@tomsun28/google-translate-api'
-const franc = require('franc-min')
+import {detectIsEnglish} from './detect'
 
 async function run(): Promise<void> {
   try {
@@ -218,23 +218,6 @@ function isWorkflowInstallationToken(token: string): boolean {
   }
   // GitHub App installation tokens, including the default Actions token.
   return token.startsWith('ghs_')
-}
-
-function detectIsEnglish(body: string | null): boolean | true {
-  if (body === null) {
-    return true
-  }
-  const detectResult = franc(body)
-  if (
-    detectResult === 'und' ||
-    detectResult === undefined ||
-    detectResult === null
-  ) {
-    core.warning(`Can not detect the undetermined comment body: ${body}`)
-    return false
-  }
-  core.info(`Detect comment body language result is: ${detectResult}`)
-  return detectResult === 'eng'
 }
 
 async function translateIssueOrigin(body: string): Promise<string> {

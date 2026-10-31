@@ -4607,7 +4607,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
 const google_translate_api_1 = __importDefault(__webpack_require__(771));
-const franc = __webpack_require__(554);
+const detect_1 = __webpack_require__(955);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -4653,11 +4653,11 @@ function run() {
                 }
             }
             // detect issue title comment body is english
-            if (originComment !== null && detectIsEnglish(originComment)) {
+            if (originComment !== null && detect_1.detectIsEnglish(originComment)) {
                 needCommitComment = false;
                 core.info('Detect the issue comment body is english already, ignore.');
             }
-            if (originTitle !== null && detectIsEnglish(originTitle)) {
+            if (originTitle !== null && detect_1.detectIsEnglish(originTitle)) {
                 needCommitTitle = false;
                 core.info('Detect the issue title body is english already, ignore.');
             }
@@ -4800,20 +4800,6 @@ function isWorkflowInstallationToken(token) {
     }
     // GitHub App installation tokens, including the default Actions token.
     return token.startsWith('ghs_');
-}
-function detectIsEnglish(body) {
-    if (body === null) {
-        return true;
-    }
-    const detectResult = franc(body);
-    if (detectResult === 'und' ||
-        detectResult === undefined ||
-        detectResult === null) {
-        core.warning(`Can not detect the undetermined comment body: ${body}`);
-        return false;
-    }
-    core.info(`Detect comment body language result is: ${detectResult}`);
-    return detectResult === 'eng';
 }
 function translateIssueOrigin(body) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -14815,6 +14801,40 @@ const normalizeUrl = (urlString, options) => {
 module.exports = normalizeUrl;
 // TODO: Remove this for the next major release
 module.exports.default = normalizeUrl;
+
+
+/***/ }),
+
+/***/ 955:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.detectIsEnglish = void 0;
+const franc = __webpack_require__(554);
+function detectIsEnglish(body) {
+    if (body === null) {
+        return true;
+    }
+    const normalized = body.trim();
+    if (normalized === '') {
+        return true;
+    }
+    // Non-Latin scripts (CJK, Hangul, Arabic, Indic, Cyrillic, Greek, etc.)
+    // are not English, even when the rest of the text is English-heavy.
+    if (/[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af\u0600-\u06ff\u0750-\u077f\u0e00-\u0e7f\u0900-\u097f\u0980-\u09ff\u0a00-\u0a7f\u0b00-\u0b7f\u0c00-\u0c7f\u0d00-\u0d7f\u0f00-\u0fff\u1100-\u11ff\u3130-\u318f\u0370-\u03ff\u0400-\u04ff\u0500-\u052f]/u.test(normalized)) {
+        return false;
+    }
+    const detectResult = franc(normalized);
+    if (detectResult === 'und' ||
+        detectResult === undefined ||
+        detectResult === null) {
+        return false;
+    }
+    return detectResult === 'eng';
+}
+exports.detectIsEnglish = detectIsEnglish;
 
 
 /***/ }),
