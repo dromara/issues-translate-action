@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/usthe/issues-translate-action.git"
+    "url": "git+https://github.com/dromara/issues-translate-action.git"
   },
   "keywords": [
     "actions",
