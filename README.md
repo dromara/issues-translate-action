@@ -26,7 +26,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: usthe/issues-translate-action@v2.8
+      - uses: dromara/issues-translate-action@v2.8
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Required unless github-token is set. secrets.GITHUB_TOKEN comments as github-actions[bot].
@@ -62,7 +62,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: usthe/issues-translate-action@v2.8
+      - uses: dromara/issues-translate-action@v2.8
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
           # Required for a custom bot. The token must be allowed to comment on issues in this repository.
