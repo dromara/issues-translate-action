@@ -5,9 +5,11 @@
 
 ## 快速使用    
 
-> 使用默认的机器人账户 @Issues-translate-bot  
+每次运行都必须提供 GitHub token。请传入 `secrets.GITHUB_TOKEN`，或使用自定义机器人 Secret。此 action 不内置任何机器人凭据。
 
-#### 创建一个github action     
+只有在设置了 `github-token` 时，才可以不填 `BOT_GITHUB_TOKEN`。`github-token` 的默认值是 `${{ github.token }}`，也就是工作流的 `GITHUB_TOKEN`。
+
+#### 创建一个 GitHub Action     
 > 在仓库的 .github/workflows/ 下创建 issue-translator.yml 如下:   
 
 ````
@@ -24,9 +26,12 @@ jobs:
     steps:
       - uses: usthe/issues-translate-action@v2.7
         with:
+          BOT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 必填，除非另行设置 github-token。secrets.GITHUB_TOKEN 会以 github-actions[bot] 的身份评论。
+          # 等价写法：github-token: ${{ github.token }}
           IS_MODIFY_TITLE: false
-          # 非必须，决定是否需要修改issue标题内容   
-          # 若是true，则机器人账户@Issues-translate-bot必须拥有修改此仓库issue权限。可以通过邀请@Issues-translate-bot加入仓库协作者实现。
+          # 非必须，默认 false。决定是否修改 issue 标题。
+          # 若为 true，该 token 必须拥有修改本仓库 issue 的权限。
           CUSTOM_BOT_NOTE: Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿
           # 非必须，自定义机器人翻译的前缀开始内容。  
 ````
@@ -34,16 +39,14 @@ jobs:
 
 ## 高级自定义       
 
-> 通过配置BOT_GITHUB_TOKEN使用自定义的机器人账户   
-> 
+> 通过 BOT_GITHUB_TOKEN 使用自定义机器人账户。  
+> 请把 token 存在仓库 Secrets 中，不要把 token 提交到代码库。
 
-1. 创建一个github账户作为您的机器人账户   
+1. 创建一个 GitHub 账户作为您的机器人账户   
 
-2. 使用此账户生成对应的token作为BOT_GITHUB_TOKEN      
+2. 为该账户生成 token，并保存为仓库 Secret，名称是 BOT_GITHUB_TOKEN      
 
-3. 将BOT_GITHUB_TOKEN = ${token} 作为Secrets BOT_GITHUB_TOKEN = ${token} 配置到您的仓库中
-
-4. 创建一个下面的github action(在仓库的 .github/workflows/ 下创建 issue-translator.yml 如下)         
+3. 创建一个下面的 GitHub Action（在仓库的 .github/workflows/ 下创建 issue-translator.yml 如下）         
 
 ````
 name: 'issue-translator'
@@ -60,17 +63,11 @@ jobs:
       - uses: usthe/issues-translate-action@v2.7
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
-          # 非必须，填写您的机器人github账户token
-          BOT_LOGIN_NAME: Issues-translate-bot    
-          # 非必须，建议不填写，机器人名称会根据token获取到，若填写，请一定与token对应的github账户名相同
+          # 使用自定义机器人时必填。该 token 需要有在本仓库评论 issue 的权限。
+          BOT_LOGIN_NAME: your-bot-login    
+          # 非必须。不填写时，action 会根据 token 读取登录名。
+          # 若填写，必须与 token 对应的 GitHub 账户名相同。
 ````
-
-
-## 其它       
-
-1. 如何邀请@Issues-translate-bot加入仓库协作者    
-Project -> Settings -> Manage access -> Invite a collaborator   
-在[issues-translate-action](https://github.com/tomsun28/issues-translate-action)创建一个issue告知，之后@Issues-translate-bot会加入您的仓库        
 
 ## DEMO  
 
