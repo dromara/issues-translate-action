@@ -24,7 +24,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: usthe/issues-translate-action@v2.7
+      - uses: usthe/issues-translate-action@v2.8
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # 必填，除非另行设置 github-token。secrets.GITHUB_TOKEN 会以 github-actions[bot] 的身份评论。
@@ -60,7 +60,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: usthe/issues-translate-action@v2.7
+      - uses: usthe/issues-translate-action@v2.8
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
           # 使用自定义机器人时必填。该 token 需要有在本仓库评论 issue 的权限。
