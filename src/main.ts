@@ -73,16 +73,18 @@ async function run(): Promise<void> {
       translateOrigin = `null@@====${originTitle}`
     }
 
-    // ignore when bot comment issue himself
+    // Ignore the bot's own comments. Callers must supply a token.
+    // There is no built-in bot credential.
     let botToken = core.getInput('BOT_GITHUB_TOKEN')
     let botLoginName = core.getInput('BOT_LOGIN_NAME')
     if (botToken === null || botToken === undefined || botToken === '') {
-      // use the default github bot token
-      const defaultBotTokenBase64 =
-        'Y2I4M2EyNjE0NThlMzIwMjA3MGJhODRlY2I5NTM0ZjBmYTEwM2ZlNg=='
-      const defaultBotLoginName = 'Issues-translate-bot'
-      botToken = Buffer.from(defaultBotTokenBase64, 'base64').toString()
-      botLoginName = defaultBotLoginName
+      botToken = resolveWorkflowToken()
+    }
+    if (botToken === null || botToken === undefined || botToken === '') {
+      core.setFailed(
+        'A GitHub token is required. Set BOT_GITHUB_TOKEN or github-token (defaults to github.token / GITHUB_TOKEN). The hardcoded bot token fallback has been removed.'
+      )
+      return
     }
 
     // support custom bot note message
@@ -98,8 +100,17 @@ async function run(): Promise<void> {
       botLoginName === ''
     ) {
       octokit = github.getOctokit(botToken)
-      const botInfo = await octokit.request('GET /user')
-      botLoginName = botInfo.data.login
+      // Workflow installation tokens (github.token) cannot call GET /user.
+      // They comment as github-actions[bot]. Custom PATs still use GET /user.
+      if (isWorkflowInstallationToken(botToken)) {
+        botLoginName = 'github-actions[bot]'
+        core.info(
+          'BOT_LOGIN_NAME is unset. Using github-actions[bot] for the workflow token. Set BOT_LOGIN_NAME when this token belongs to another account.'
+        )
+      } else {
+        const botInfo = await octokit.request('GET /user')
+        botLoginName = botInfo.data.login
+      }
     }
     if (botLoginName === issueUser) {
       core.info(
@@ -189,6 +200,24 @@ ${translateComment}
   } catch (error: any) {
     core.setFailed(error.message)
   }
+}
+
+function resolveWorkflowToken(): string {
+  return (
+    core.getInput('github-token') ||
+    core.getInput('GITHUB_TOKEN') ||
+    process.env.GITHUB_TOKEN ||
+    ''
+  )
+}
+
+function isWorkflowInstallationToken(token: string): boolean {
+  const envToken = process.env.GITHUB_TOKEN || ''
+  if (envToken !== '' && token === envToken) {
+    return true
+  }
+  // GitHub App installation tokens, including the default Actions token.
+  return token.startsWith('ghs_')
 }
 
 function detectIsEnglish(body: string | null): boolean | true {

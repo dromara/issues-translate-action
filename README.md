@@ -6,7 +6,9 @@ The action for translating Non-English issues content to English.
 
 ## Usage  
 
-> Use the default bot account @Issues-translate-bot  
+A GitHub token is required on every run. Pass `secrets.GITHUB_TOKEN` or a custom bot secret. This action does not include a built-in bot credential.
+
+`BOT_GITHUB_TOKEN` can be omitted only when `github-token` is set. That input defaults to `${{ github.token }}`, which is the workflow `GITHUB_TOKEN`.
 
 #### Create a workflow from this action   
 
@@ -26,26 +28,27 @@ jobs:
     steps:
       - uses: usthe/issues-translate-action@v2.7
         with:
+          BOT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Required unless github-token is set. secrets.GITHUB_TOKEN comments as github-actions[bot].
+          # Equivalent: github-token: ${{ github.token }}
           IS_MODIFY_TITLE: false
-          # not require, default false, . Decide whether to modify the issue title
-          # if true, the robot account @Issues-translate-bot must have modification permissions, invite @Issues-translate-bot to your project or use your custom bot.
+          # Optional, default false. Decide whether to modify the issue title.
+          # If true, the token must be allowed to edit issues in this repository.
           CUSTOM_BOT_NOTE: Bot detected the issue body's language is not English, translate it automatically. 👯👭🏻🧑‍🤝‍🧑👫🧑🏿‍🤝‍🧑🏻👩🏾‍🤝‍👨🏿👬🏿
-          # not require. Customize the translation robot prefix message.
+          # Optional. Customize the translation robot prefix message.
 ````
 
 
 ## Advanced Custom   
 
-> Use your own bot by add BOT_GITHUB_TOKEN   
-> 
+> Use your own bot account by passing its token as BOT_GITHUB_TOKEN.  
+> Store the token in repository secrets. Never commit a token.
 
-1. Create a new github account as your bot  
+1. Create a new GitHub account as your bot  
 
-2. Use the account to generate a new token as BOT_GITHUB_TOKEN  
+2. Generate a token for that account and store it as a repository secret named BOT_GITHUB_TOKEN  
 
-3. Add the Secrets BOT_GITHUB_TOKEN = ${token} in your project  
-
-4. Create a workflow from this action(Create file issue-translator.yml in .github/workflows/)    
+3. Create a workflow from this action (Create file issue-translator.yml in .github/workflows/)    
 
 ````
 name: 'issue-translator'
@@ -62,18 +65,11 @@ jobs:
       - uses: usthe/issues-translate-action@v2.7
         with:
           BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }} 
-          # Required, input your bot github token
-          BOT_LOGIN_NAME: Issues-translate-bot    
-          # Not required, suggest not input, action will get name from BOT_GITHUB_TOKEN
-          # If input, BOT name must match github token
+          # Required for a custom bot. The token must be allowed to comment on issues in this repository.
+          BOT_LOGIN_NAME: your-bot-login    
+          # Optional. When omitted, the action reads the login from the token.
+          # If set, the login must match the account that owns the token.
 ````
-
-
-## Other   
-
-1. invite @Issues-translate-bot to your project.    
-Project -> Settings -> Manage access -> Invite a collaborator   
-Post an issue in [issues-translate-action](https://github.com/tomsun28/issues-translate-action) to let us know, the @Issues-translate-bot will join soon.    
 
 ## DEMO  
 

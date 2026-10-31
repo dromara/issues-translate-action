@@ -5,10 +5,15 @@ branding:
   color: 'orange'
 author: 'tomsun28'
 inputs:
-  BOT_GITHUB_TOKEN: 
-    description: 'The issue comment bot GITHUB_TOKEN.'
+  BOT_GITHUB_TOKEN:
+    description: 'GitHub token used to comment and update issues. Optional only when github-token (or the workflow github.token / GITHUB_TOKEN) is available. This action has no built-in bot credential; a caller-supplied token is required.'
+    required: false
+  github-token:
+    description: 'Workflow token used when BOT_GITHUB_TOKEN is empty. Defaults to github.token. Do not rely on a built-in bot token; supply this or BOT_GITHUB_TOKEN.'
+    default: '${{ github.token }}'
+    required: false
   BOT_LOGIN_NAME:
-    description: 'The issue comment bot github login name.'
+    description: 'Login of the account that posts translations. Optional. Resolved from the token when possible. Workflow github.token acts as github-actions[bot].'
   IS_MODIFY_TITLE: 
     description: 'Is need modify issue title, true or false, default false.'
   CUSTOM_BOT_NOTE:
